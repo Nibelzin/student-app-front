@@ -1,13 +1,10 @@
 import { cn } from "@/lib/utils"
-import * as React from "react"
 
-// shadcn/ui skeleton primitive ------------------------------------------------
-export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-function Skeleton({ className, ...props }: SkeletonProps) {
+function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-neutral-200/80 dark:bg-neutral-800/60", className)}
+      data-slot="skeleton"
+      className={cn("bg-accent animate-pulse rounded-md", className)}
       {...props}
     />
   )

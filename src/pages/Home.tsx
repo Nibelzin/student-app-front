@@ -2,14 +2,13 @@
 
 import { useMemo, useRef } from 'react'
 import { Card } from '@/components/ui/card'
-import type { Activity } from '@/types/types'
+import type { Activity, Note } from '@/types/types'
 import { GridStack } from 'gridstack'
 import { useEffect } from 'react'
 import { GripVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 // Temporary mocked data placeholders (to be replaced with real data fetching later)
-const QUICK_NOTES_PLACEHOLDER = Array.from({ length: 4 })
 
 const NEXT_ACTIVITIES_PLACEHOLDER: Activity[] = [
     {
@@ -35,6 +34,33 @@ const NEXT_ACTIVITIES_PLACEHOLDER: Activity[] = [
         description: 'Mínimo de 1000 palavras',
         dueDate: new Date('2023-09-15T17:00:00'),
         isCompleted: false
+    }
+]
+
+const QUICK_NOTES_PLACEHOLDER: Note[] = [
+    {
+        content: 'Revisar os capítulos 1 a 5 do livro de matemática.',
+        createdAt: new Date('2023-09-01T14:30:00'),
+        id: '1',
+        userId: 'user1'
+    },
+    {
+        content: 'Reunião com o professor na sexta-feira às 14h.',
+        createdAt: new Date('2023-09-02T10:00:00'),
+        id: '2',
+        userId: 'user1'
+    },
+    {
+        content: 'Brainstorming de ideias para o projeto de história.',
+        createdAt: new Date('2023-09-03T15:00:00'),
+        id: '3',
+        userId: 'user1'
+    },
+    {
+        content: 'Listar todas as tarefas pendentes para a próxima semana.',
+        createdAt: new Date('2023-09-04T09:00:00'),
+        id: '4',
+        userId: 'user1'
     }
 ]
 
@@ -121,22 +147,22 @@ const Home = () => {
                             <GripVertical size={20} className='handle cursor-pointer' />
                             <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">Notas Rápidas</h2>
                         </div>
-                        {NEXT_ACTIVITIES_PLACEHOLDER.length === 0 ? (
+                        {QUICK_NOTES_PLACEHOLDER.length === 0 ? (
                             <div className="lg:col-span-2">
                                 <Card className="flex items-center justify-center h-64 bg-neutral-50 p-4 text-center text-neutral-500 dark:bg-neutral-900/40">
-                                    Nenhuma atividade próxima
+                                    Nenhuma Nota
                                 </Card>
                             </div>
                         ) : (
                             <div className="lg:col-span-2">
                                 <div className="flex flex-col gap-3">
-                                    {NEXT_ACTIVITIES_PLACEHOLDER.map(activity => (
+                                    {QUICK_NOTES_PLACEHOLDER.map(note => (
                                         <Card
-                                            key={activity.id}
-                                            className="flex flex-col p-4 bg-neutral-50 dark:bg-neutral-900/40"
+                                            key={note.id}
+                                            className="flex flex-col p-4 bg-yellow-100 dark:bg-neutral-900/40"
                                         >
-                                            <p className=''>{activity.title}</p>
-                                            <p className='text-lg'>{activity.description}</p>
+                                            <p className=''>{note.content}</p>
+                                            <p className='text-sm'>{note.createdAt.toLocaleString()}</p>
                                         </Card>
                                     ))}
                                 </div>
