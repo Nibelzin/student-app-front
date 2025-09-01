@@ -44,7 +44,7 @@ const items = [
 export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" defaultChecked={false} variant="sidebar">
-            <SidebarContent>
+            <SidebarContent className="bg-white">
                 <SidebarHeader>
                     <SidebarMenu>
                         <SidebarMenuItem>

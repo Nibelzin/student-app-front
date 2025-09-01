@@ -5,14 +5,14 @@ import { SidebarTrigger } from './ui/sidebar'
 
 const Header = () => {
   return (
-    <div className='border-b p-2 flex items-center justify-between'>
+    <header className='border-b p-2 flex items-center justify-between'>
       <div className='flex gap-4 items-center'>
         <SidebarTrigger/>
       </div>
       <div className='flex gap-2 items-center'>
         <Bell size={18}/>
       </div>
-    </div>
+    </header>
   )
 }
 

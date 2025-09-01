@@ -3,23 +3,42 @@ export type User = {
     name: string;
     email: string;
     course: string;
-    semester?: number;
-    created_at: Date
+    currentSemester?: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export type Period = {
+    id: string;
+    userId: string;
+    name: string;
+    startDate: Date;
+    endDate: Date;
+    isCurrent: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type Subject = {
     id: string;
     userId: string;
+    periodId: string;
     name: string;
     professor?: string;
-    classroom?: string
+    classroom?: string;
+    color: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type Note = {
     id: string;
     userId: string;
+    title: string;
     content: string;
-    createdAt: Date
+    isPinned: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type Activity = {
@@ -28,7 +47,11 @@ export type Activity = {
     title: string;
     description?: string;
     dueDate: Date;
-    isCompleted: boolean
+    isCompleted: boolean;
+    type?: string;
+    reminderAt?: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type ClassSchedule = {
@@ -36,7 +59,8 @@ export type ClassSchedule = {
     subjectId: string;
     weekDay: number;
     startTime: Date;
-    endTime?: Date
+    endTime?: Date;
+    location?: string;
 }
 
 export type Material = {

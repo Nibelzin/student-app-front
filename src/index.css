@@ -111,8 +111,7 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-Remove o ícone de seta padrão que o Gridstack pode adicionar
-.grid-stack-item .ui-resizable-handle::after {
+Remove o ícone de seta padrão que o Gridstack pode adicionar .grid-stack-item .ui-resizable-handle::after {
   content: none;
 }
 
@@ -137,12 +136,67 @@ Remove o ícone de seta padrão que o Gridstack pode adicionar
   background-origin: content-box;
 }
 
+/* MentionList.css */
+.items {
+  position: relative;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  color: rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  font-size: 0.9rem;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0px 10px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.2rem;
+}
+
+.item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background-color: transparent;
+  border-radius: 0.4rem;
+  border: 1px solid transparent;
+  padding: 0.2rem 0.4rem;
+}
+
+.item.is-selected {
+  border-color: #000;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
   body {
     @apply bg-background text-foreground;
+  }
+  .tiptap {
+    :first-child {
+      margin-top: 0;
+    }
+
+    p.is-editor-empty:first-child::before {
+      @apply text-muted-foreground;
+      content: attr(data-placeholder);
+      float: left;
+      height: 0;
+      pointer-events: none;
+    }
+
+    h1 {
+      @apply text-2xl font-semibold mb-2;
+    }
+    h2 {
+      @apply text-xl font-bold mb-2;
+    }
+    h3 {
+      @apply text-lg font-bold mb-2;
+    }
+    ul,
+    ol {
+      @apply list-disc pl-5;
+    }
+    .mention {
+      @apply text-blue-500 font-bold;
+    }
   }
 }
