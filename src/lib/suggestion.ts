@@ -3,6 +3,7 @@ import tippy, { type Instance } from 'tippy.js'
 import { SUBJECTS_PLACEHOLDER } from "./mock";
 import SubjectsList from "@/components/notes/SubjectsList";
 import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
+import 'tippy.js/animations/scale.css'
 
 export const suggestion: Omit<SuggestionOptions, 'editor'> = {
     items: ({ query }: { query: string }) => {
@@ -31,7 +32,8 @@ export const suggestion: Omit<SuggestionOptions, 'editor'> = {
                     showOnCreate: true,
                     interactive: true,
                     trigger: 'manual',
-                    placement: 'bottom-start'
+                    placement: 'bottom-start',
+                    animation: 'scale'
                 })
             },
 

@@ -8,11 +8,34 @@ import Highlight from '@tiptap/extension-highlight'
 import { Placeholder } from '@tiptap/extensions'
 import Mention from '@tiptap/extension-mention'
 import suggestion from '../../lib/suggestion.ts'
+import { QUICK_NOTES_PLACEHOLDER } from '@/lib/mock.ts'
+
+interface UserNoteProps {
+    note: Note
+    notes: Note[]
+    setUserNotes: (notes: Note[]) => void
+    deleteUserNote: (noteId: string) => void
+}
 
 
-const UserNote = (note: Note) => {
+const UserNote = ({ note, setUserNotes, notes, deleteUserNote }: UserNoteProps) => {
+
+    const updateNote = (content: any) => {
+        const newNotes = notes.map(oldNote => {
+            if (oldNote.id === note.id) {
+                return { ...note, content: JSON.stringify(content) }
+            }
+            return oldNote
+        })
+
+        setUserNotes(newNotes)
+    }
 
     const editor = useEditor({
+        onUpdate: ({ editor }) => {
+            updateNote(editor.getJSON())
+            console.log(editor.getText())
+        },
         extensions: [
             StarterKit,
             Highlight,
@@ -32,10 +55,10 @@ const UserNote = (note: Note) => {
                 suggestion
             })
         ],
-        content: note.content,
+        content: JSON.parse(note.content),
         editorProps: {
             attributes: {
-                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none dark:prose-invert min-h-36 max-h-96 overflow-auto'
+                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-xl m-0 focus:outline-none dark:prose-invert min-h-36 max-h-96 overflow-hidden hover:overflow-y-auto'
             },
         }
     })
@@ -51,7 +74,7 @@ const UserNote = (note: Note) => {
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-xs'>{format(note.createdAt, 'dd/MM/yyyy HH:mm')}</p>
-                    <Trash2 className='cursor-pointer' size={16} />
+                    <Trash2 className='cursor-pointer' size={16} onClick={() => deleteUserNote(note.id)} />
                 </div>
             </div>
         </Card>

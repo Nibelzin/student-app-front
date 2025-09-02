@@ -136,6 +136,15 @@ Remove o ícone de seta padrão que o Gridstack pode adicionar .grid-stack-item 
   background-origin: content-box;
 }
 
+.grid-stack {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.grid-stack.grid-ready {
+  opacity: 1;
+}
+
 
 /* MentionList.css */
 .items {
@@ -160,7 +169,7 @@ Remove o ícone de seta padrão que o Gridstack pode adicionar .grid-stack-item 
 }
 
 .item.is-selected {
-  border-color: #000;
+  background-color: #f5f5f5;
 }
 
 @layer base {

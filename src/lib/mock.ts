@@ -33,10 +33,10 @@ export const NEXT_ACTIVITIES_PLACEHOLDER: Activity[] = [
     }
 ]
 
-export const QUICK_NOTES_PLACEHOLDER: Note[] = [
+export let QUICK_NOTES_PLACEHOLDER: Note[] = [
     {
-        content: 'Revisar os capítulos 1 a 5 do livro de matemática.',
-        createdAt: new Date('2023-09-01T14:30:00'),
+        content: "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":1},\"content\":[{\"type\":\"text\",\"text\":\"Olá teste\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"mention\",\"attrs\":{\"id\":\"math101\",\"label\":\"Matemática\",\"mentionSuggestionChar\":\"@\"}},{\"type\":\"text\",\"text\":\" \"}]},{\"type\":\"horizontalRule\"},{\"type\":\"paragraph\"},{\"type\":\"paragraph\"}]}",
+        createdAt: new Date('2023-09-01T20:30:00'),
         id: '1',
         userId: 'user1',
         title: 'Revisão de Matemática',
@@ -44,29 +44,11 @@ export const QUICK_NOTES_PLACEHOLDER: Note[] = [
         updatedAt: new Date()
     },
     {
-        content: 'Reunião com o professor na sexta-feira às 14h.',
-        createdAt: new Date('2023-09-02T10:00:00'),
+        content: "{\"type\":\"doc\",\"content\":[{\"type\":\"heading\",\"attrs\":{\"level\":2},\"content\":[{\"type\":\"text\",\"text\":\"TESTE 2\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Matéria: \"},{\"type\":\"mention\",\"attrs\":{\"id\":\"hist301\",\"label\":\"História\",\"mentionSuggestionChar\":\"@\"}},{\"type\":\"text\",\"text\":\" \"}]},{\"type\":\"paragraph\"},{\"type\":\"horizontalRule\"},{\"type\":\"paragraph\"},{\"type\":\"bulletList\",\"content\":[{\"type\":\"listItem\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Bullet point 1\"}]}]}]},{\"type\":\"paragraph\"},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"marks\":[{\"type\":\"bold\"},{\"type\":\"italic\"}],\"text\":\"NEGRITO ITÁLICO\"}]},{\"type\":\"paragraph\"},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"TUDO QUE há o \"}]},{\"type\":\"paragraph\"}]}",
+        createdAt: new Date('2023-09-01T14:30:00'),
         id: '2',
         userId: 'user1',
-        title: 'Reunião com o Professor',
-        isPinned: false,
-        updatedAt: new Date()
-    },
-    {
-        content: 'Brainstorming de ideias para o projeto de história.',
-        createdAt: new Date('2023-09-03T15:00:00'),
-        id: '3',
-        userId: 'user1',
-        title: 'Brainstorming de História',
-        isPinned: false,
-        updatedAt: new Date()
-    },
-    {
-        content: 'Listar todas as tarefas pendentes para a próxima semana.',
-        createdAt: new Date('2023-09-04T09:00:00'),
-        id: '4',
-        userId: 'user1',
-        title: 'Lista de Tarefas Pendentes',
+        title: 'Revisão de Matemática',
         isPinned: false,
         updatedAt: new Date()
     }

@@ -33,8 +33,8 @@ export type Subject = {
 
 export type Note = {
     id: string;
-    userId: string;
-    title: string;
+    userId?: string;
+    title?: string;
     content: string;
     isPinned: boolean;
     createdAt: Date;
@@ -76,4 +76,11 @@ export type GradeAttendance = {
     description?: string;
     grade?: number;
     absences: number 
+}
+
+export type Widget = {
+    position: number,
+    type: 'notes' | 'tasks' | 'events',
+    width: number,
+    height: number
 }
