@@ -3,14 +3,13 @@ import { Card } from '@/components/ui/card'
 import { GridStack } from 'gridstack'
 import { useEffect } from 'react'
 import { GripVertical, Plus } from 'lucide-react'
-import { format, set } from 'date-fns'
+import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import UserNote from '@/components/notes/UserNote'
 import { NEXT_ACTIVITIES_PLACEHOLDER, QUICK_NOTES_PLACEHOLDER } from '@/lib/mock'
 import { Input } from '@/components/ui/input'
 import type { Note } from '@/types/types'
 import { nodeContainsText } from '@/lib/utils'
-import { useEditorState } from '@tiptap/react'
 
 const Home = () => {
     const [notes, setNotes] = useState<Note[]>(QUICK_NOTES_PLACEHOLDER)
@@ -38,7 +37,7 @@ const Home = () => {
             isPinned: false,
             createdAt: new Date(),
             updatedAt: new Date(),
-            content: "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\"},{\"type\":\"paragraph\"}]}"
+            content: "{\"type\":\"doc\"}"
         }
         setNotes(prevNotes => [...prevNotes, newNote])
     }

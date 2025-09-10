@@ -2,7 +2,7 @@ import { ReactRenderer } from "@tiptap/react";
 import tippy, { type Instance } from 'tippy.js'
 import { SUBJECTS_PLACEHOLDER } from "./mock";
 import SubjectsList from "@/components/notes/SubjectsList";
-import type { SuggestionOptions, SuggestionProps } from "@tiptap/suggestion";
+import type { SuggestionOptions } from "@tiptap/suggestion";
 import 'tippy.js/animations/scale.css'
 
 export const suggestion: Omit<SuggestionOptions, 'editor'> = {

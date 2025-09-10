@@ -1,6 +1,4 @@
-import { Bell, Menu, Notebook } from 'lucide-react'
-import { Button } from './ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Bell } from 'lucide-react'
 import { SidebarTrigger } from './ui/sidebar'
 
 const Header = () => {

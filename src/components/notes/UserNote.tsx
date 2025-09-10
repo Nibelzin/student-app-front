@@ -1,4 +1,4 @@
-import { useEditor, EditorContent, useEditorState } from '@tiptap/react'
+import { useEditor, EditorContent } from '@tiptap/react'
 import { Card } from '../ui/card'
 import type { Note } from '@/types/types'
 import { Trash2 } from 'lucide-react'
@@ -8,7 +8,6 @@ import Highlight from '@tiptap/extension-highlight'
 import { Placeholder } from '@tiptap/extensions'
 import Mention from '@tiptap/extension-mention'
 import suggestion from '../../lib/suggestion.ts'
-import { QUICK_NOTES_PLACEHOLDER } from '@/lib/mock.ts'
 
 interface UserNoteProps {
     note: Note

@@ -5,7 +5,6 @@ import {
     SidebarContent,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -16,12 +15,12 @@ import {
 const items = [
     {
         title: "Home",
-        url: "#",
+        url: "/",
         icon: Home,
     },
     {
-        title: "Materiais",
-        url: "#",
+        title: "Matérias",
+        url: "/subjects",
         icon: Inbox,
     },
     {
@@ -43,7 +42,7 @@ const items = [
 
 export function AppSidebar() {
     return (
-        <Sidebar collapsible="icon" defaultChecked={false} variant="sidebar">
+        <Sidebar collapsible="icon" variant="sidebar">
             <SidebarContent className="bg-white">
                 <SidebarHeader>
                     <SidebarMenu>
