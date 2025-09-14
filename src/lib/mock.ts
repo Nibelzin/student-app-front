@@ -1,4 +1,4 @@
-import type { Activity, Note, Subject } from "@/types/types";
+import type { Activity, Note, Period, Subject } from "@/types/types";
 
 export const NEXT_ACTIVITIES_PLACEHOLDER: Activity[] = [
     {
@@ -98,5 +98,28 @@ export const SUBJECTS_PLACEHOLDER: Subject[] = [
         updatedAt: new Date(),
         classroom: 'Sala 104',
         professor: 'Prof. Lima'
+    }
+]
+
+export const PERIOD_PLACEHOLDER: Period[] = [
+    {
+        id: 'period1',
+        userId: 'user1',
+        name: '2 º Semestre',
+        startDate: new Date('2023-08-01'),
+        endDate: new Date('2023-12-31'),
+        isCurrent: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+    },
+    {
+        id: 'period2',
+        userId: 'user1',
+        name: '1 º Semestre',
+        startDate: new Date('2023-01-01'),
+        endDate: new Date('2023-07-31'),
+        isCurrent: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
     }
 ]

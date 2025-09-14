@@ -17,8 +17,6 @@ const Subjects = () => {
               <SubjectCard 
                 key={index}
                 subject={subject}
-                period="1º Bimestre"
-                color={subject.color}
               />
             ))}
           <div className='w-full md:w-52 h-30 md:h-52 flex justify-center items-center bg-white border rounded-md cursor-pointer hover:shadow-md transition-shadow'>
