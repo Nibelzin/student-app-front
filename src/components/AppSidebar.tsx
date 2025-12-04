@@ -1,8 +1,9 @@
-import { Calendar, Home, Inbox, Notebook, Search, Settings } from "lucide-react"
+import { Calendar, ChevronUp, Home, Inbox, Notebook, Search, Settings, User2 } from "lucide-react"
 
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarHeader,
@@ -10,6 +11,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { useCurrentUser } from "@/hooks/use-user"
+import { logout } from "@/api/authService"
+import { Link, useLocation } from "react-router"
 
 // Menu items.
 const items = [
@@ -41,31 +46,39 @@ const items = [
 ]
 
 export function AppSidebar() {
+
+    const { data: user, isLoading } = useCurrentUser();
+    const location = useLocation();
+
+    const handleLogout = () => {
+        logout();
+    }
+
     return (
-        <Sidebar collapsible="icon" variant="sidebar">
-            <SidebarContent className="bg-white">
-                <SidebarHeader>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton asChild>
-                                <a href="#">
-                                    <Notebook />
-                                    <span>Hub de Luan H.</span>
-                                </a>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarHeader>
+        <Sidebar collapsible="icon" variant="sidebar" className="bg-white">
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                            <Link to="/">
+                                <Notebook />
+                                <span>Student App</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
+            <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a href={item.url}>
+                                    <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                                        <Link to={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
-                                        </a>
+                                        </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
@@ -73,6 +86,37 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <SidebarMenuButton>
+                                    <User2 /> {user ? user.name : 'Carregando...'}
+                                    <ChevronUp className="ml-auto" />
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56">
+                                <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem>
+                                        Perfil
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        Administração
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                                <DropdownMenuSeparator/>
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem className="text-red-500" onClick={handleLogout}>
+                                        Sair
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
         </Sidebar>
     )
 }

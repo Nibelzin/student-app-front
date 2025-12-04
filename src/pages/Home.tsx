@@ -10,13 +10,15 @@ import { NEXT_ACTIVITIES_PLACEHOLDER, QUICK_NOTES_PLACEHOLDER } from '@/lib/mock
 import { Input } from '@/components/ui/input'
 import type { Note } from '@/types/types'
 import { nodeContainsText } from '@/lib/utils'
+import { useGridStack } from '@/hooks/use-gridstack'
+import { useCurrentUser } from '@/hooks/use-user'
 
 const Home = () => {
     const [notes, setNotes] = useState<Note[]>(QUICK_NOTES_PLACEHOLDER)
     const [noteSearch, setNoteSearch] = useState<string>('')
-    const [isGridReady, setGridReady] = useState(false);
 
-    const gridRef = useRef<GridStack | null>(null)
+    const { isReady } = useGridStack();
+    const { data: user,  isPending: isUserLoading } = useCurrentUser();
 
     const itemsRef = useRef(new Map<string, HTMLElement>())
 
@@ -56,76 +58,15 @@ const Home = () => {
         }
     });
 
-    useEffect(() => {
-        const saveLayout = () => {
-            if (gridRef.current) {
-                const serializedData = gridRef.current.save(false);
-                localStorage.setItem('grid-layout', JSON.stringify(serializedData));
-            }
-        };
-
-      
-        const timer = setTimeout(() => {
-            const grid = GridStack.init({
-                marginUnit: 'px',
-                handle: '.handle',
-                cellHeight: '100px',
-                columnOpts: {
-                    breakpoints: [{ w: 768, c: 1 }],
-                    columnMax: 6,
-                    layout: 'compact'
-                }
-            });
-
-            if (!grid) {
-                console.error("Falha ao inicializar o GridStack. O elemento alvo pode não existir.");
-                return;
-            }
-
-            gridRef.current = grid;
-
-            const savedLayout = localStorage.getItem('grid-layout');
-            if (savedLayout) {
-                try {
-                    const parsedLayout = JSON.parse(savedLayout);
-                    console.log("Layout salvo encontrado:", parsedLayout);
-                    grid.load(parsedLayout);
-                } catch (e) {
-                    console.error('Erro ao carregar layout salvo:', e);
-                }
-            }
-
-            grid.on('change', saveLayout);
-
-            setTimeout(() => {
-                setGridReady(true);
-            }, 200);
-
-        }, 0); 
-
-
-        return () => {
-            clearTimeout(timer); 
-            const grid = gridRef.current;
-            if (grid) {
-                grid.off('change');
-                grid.destroy();
-                gridRef.current = null;
-            }
-        };
-
-    }, []);
-
-
     return (
         <main className="mx-auto w-full max-w-screen-2xl p-8 mb-16 sm:p-6 md:p-12 lg:px-12 xl:px-24 2xl:px-32">
             {/* Greeting */}
             <header className="m-4">
-                <h1 className="text-2xl tracking-tight text-balance font-semibold">Olá, Luan</h1>
+                <h1 className="text-2xl tracking-tight text-balance font-semibold">Olá, {user?.name.split(' ')[0]}</h1>
                 <p className="text-sm text-neutral-600">{format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
             </header>
 
-            <div className={`grid-stack ${isGridReady ? 'grid-ready' : ''}`}>
+            <div className={`grid-stack ${isReady ? 'grid-ready' : ''}`}>
                 <div className='grid-stack-item' gs-id="activities" gs-w="4" gs-min-w="2" gs-max-h="6" gs-h="4">
                     <div className='grid-stack-item-content bg-white p-4 rounded-md border'>
                         <div className='flex items-center mb-4 gap-2'>

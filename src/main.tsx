@@ -6,30 +6,51 @@ import Home from './pages/Home.tsx'
 import MainLayout from './layout/MainLayout.tsx'
 import Subjects from './pages/Subjects.tsx'
 import SubjectDetails from './pages/SubjectDetails.tsx'
+import Login from './pages/auth/Login.tsx'
+import Register from './pages/auth/Register.tsx'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2
+    }
+  }
+})
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout/>,
+    element: <MainLayout />,
     children: [
       {
         path: "/",
-        element: <Home/>
+        element: <Home />
       },
       {
         path: "/subjects",
-        element: <Subjects/>
+        element: <Subjects />
       },
       {
         path: "/subject/:id",
-        element: <SubjectDetails/>
+        element: <SubjectDetails />
       }
     ]
+  },
+  {
+    path: "/login",
+    element: <Login />
+  },
+  {
+    path: "/register",
+    element: <Register />
   }
 ])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </StrictMode>,
 )

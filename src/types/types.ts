@@ -5,12 +5,13 @@ export type User = {
     course: string;
     currentSemester?: number;
     createdAt: Date;
-    updatedAt: Date;
+    updatedAt?: Date;
+    periods?: Period[];
 }
 
 export type Period = {
     id: string;
-    userId: string;
+    userId?: string;
     name: string;
     startDate: Date;
     endDate: Date;
@@ -83,4 +84,11 @@ export type Widget = {
     type: 'notes' | 'tasks' | 'events',
     width: number,
     height: number
+}
+
+export type ApiError = {
+    timestamp: string;
+    status: number;
+    error: string;
+    message: string
 }
