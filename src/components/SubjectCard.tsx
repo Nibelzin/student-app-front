@@ -1,4 +1,3 @@
-import { PERIOD_PLACEHOLDER } from '@/lib/mock'
 import { generateAcronym } from '@/lib/utils'
 import type { Subject } from '@/types/types'
 
@@ -9,7 +8,6 @@ interface SubjectCardProps {
 const SubjectCard = ({ subject }: SubjectCardProps) => {
 
     const acronym = subject ? generateAcronym(subject.name) : 'MT'
-    const period = PERIOD_PLACEHOLDER.find(per => per.id === subject?.periodId)?.name || 'Período Desconhecido'
 
     return (
         <a className='w-full md:w-52 h-30 md:h-52 flex justify-center items-center bg-white border rounded-md cursor-pointer hover:shadow-md transition-shadow' href={`/subject/${subject?.id}`}>
@@ -17,7 +15,7 @@ const SubjectCard = ({ subject }: SubjectCardProps) => {
                 <div className={`w-20 h-20 rounded-full flex items-center justify-center text-white ${subject?.color ? `bg-gray-500` : 'bg-gray-500'}`}>{acronym}</div>
                 <div className='flex flex-col items-start md:items-center'>
                     <span className='text-center text-ellipsis'>{subject?.name}</span>
-                    <span className='text-gray-500 text-sm'>{period}</span>
+                    <span className='text-gray-500 text-sm'>{subject?.periodName}</span>
                 </div>
             </div>
         </a>

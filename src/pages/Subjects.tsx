@@ -1,26 +1,43 @@
+import { useNavigate } from 'react-router'
+import { getUserSubjects } from '@/api/userService'
 import Combobox from '@/components/Combobox'
 import SubjectCard from '@/components/SubjectCard'
+import { useCurrentUser, useUserPreferences } from '@/hooks/use-user'
 import { SUBJECTS_PLACEHOLDER } from '@/lib/mock'
+import { useQuery } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 
 const Subjects = () => {
+  const navigate = useNavigate();
+
+  const { data: user, isPending: isUserLoading } = useCurrentUser();
+  const { data: userPreferences, isPending: isPreferencesLoading } = useUserPreferences(user?.id);
+
+  const { data: subjectsPage, isPending: isSubjectsLoading } = useQuery({
+    queryKey: ['userSubjects', user?.id],
+    queryFn: () => getUserSubjects({ userId: user?.id! }),
+    enabled: !!user?.id,
+  })
+
   return (
     <main className="mx-auto w-full max-w-screen-2xl p-8 mb-16 sm:p-6 md:p-12 lg:px-12 xl:px-24 2xl:px-32">
       <header className="flex gap-4 m-4 mb-12">
-        <Combobox label='Matéria' />
-        <Combobox label='Bimestre' />
+        <h1 className="text-2xl font-semibold">Matérias</h1>
       </header>
       <div className="flex justify-center">
         <div className='w-full md:w-fit grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4'>
           {
-            SUBJECTS_PLACEHOLDER.map((subject, index) => (
-              <SubjectCard 
+            subjectsPage?.content.map((subject, index) => (
+              <SubjectCard
                 key={index}
                 subject={subject}
               />
             ))}
-          <div className='w-full md:w-52 h-30 md:h-52 flex justify-center items-center bg-white border rounded-md cursor-pointer hover:shadow-md transition-shadow'>
-            <Plus/>
+          <div
+            onClick={() => navigate('/subjects/new')}
+            className='w-full md:w-52 h-30 md:h-52 flex justify-center items-center bg-white border rounded-md cursor-pointer hover:shadow-md transition-shadow'
+          >
+            <Plus />
           </div>
         </div>
       </div>

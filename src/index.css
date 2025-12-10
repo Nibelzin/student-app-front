@@ -206,7 +206,8 @@ Remove o ícone de seta padrão que o Gridstack pode adicionar .grid-stack-item 
       @apply list-disc pl-5;
     }
     .mention {
-      @apply text-blue-500 font-bold;
+      @apply text-blue-500 font-bold cursor-pointer;
     }
+    
   }
 }

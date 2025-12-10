@@ -1,3 +1,6 @@
+import type { GridStackWidget } from "gridstack";
+import type { off } from "process";
+
 export type User = {
     id: string;
     name: string;
@@ -24,6 +27,7 @@ export type Subject = {
     id: string;
     userId: string;
     periodId: string;
+    periodName?: string;
     name: string;
     professor?: string;
     classroom?: string;
@@ -34,8 +38,7 @@ export type Subject = {
 
 export type Note = {
     id: string;
-    userId?: string;
-    title?: string;
+    userId: string;
     content: string;
     isPinned: boolean;
     createdAt: Date;
@@ -91,4 +94,41 @@ export type ApiError = {
     status: number;
     error: string;
     message: string
+}
+
+export type UserPreferences = {
+    id: string;
+    theme: 'light' | 'dark' | 'system';
+    language: string;
+    settings: Record<string, any>;
+    dashboardLayout: GridStackWidget[];
+}
+
+export type Page<T> = {
+    totalElements: number;
+    totalPages: number;
+    first: boolean;
+    last: boolean;
+    size: number;
+    content: T[];
+    number: number;
+    sort: {
+        empty: boolean;
+        sorted: boolean;
+        unsorted: boolean;
+    };
+    numberOfElements: number;
+    pageable: {
+        offset: number;
+        sort: {
+            empty: boolean;
+            sorted: boolean;
+            unsorted: boolean;
+        };
+        paged: boolean;
+        pageSize: number;
+        pageNumber: number;
+        unpaged: boolean;
+    };
+    empty: boolean;
 }

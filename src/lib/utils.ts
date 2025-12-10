@@ -38,3 +38,26 @@ export const generateAcronym = (text: string) => {
     .map(word => word.toLowerCase() === "ii" ? "II" : word[0].toUpperCase())
     .join('');
 }
+
+export const safeParseNoteContent = (content?: string) => {
+  if (!content || !content.trim()) {
+    return { type: 'doc', content: [] };
+  }
+
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    console.error('Erro ao parsear o conteúdo da nota:', error);
+    return { type: 'doc', content: [] };
+  }
+}
+
+export const buildQueryString = (params: Record<string, string | number | undefined>): string => {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+            searchParams.append(key, String(value));
+        }
+    })
+    return searchParams.toString();
+}

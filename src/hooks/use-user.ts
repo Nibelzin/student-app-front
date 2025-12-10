@@ -1,4 +1,4 @@
-import { createUser, getMe } from "@/api/userService";
+import { createUser, getMe, getUserPreferences } from "@/api/userService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useCurrentUser() {
@@ -20,5 +20,14 @@ export function useCreateUser() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user']})
         }
+    })
+}
+
+export function useUserPreferences(userId?: string) {
+    return useQuery({
+        queryKey: ['userPreferences', userId],
+        queryFn: () => getUserPreferences({ userId: userId! }),
+        enabled: !!userId,
+        staleTime: 1000 * 60 * 5, // 5 minutes
     })
 }

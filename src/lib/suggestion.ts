@@ -4,10 +4,17 @@ import { SUBJECTS_PLACEHOLDER } from "./mock";
 import SubjectsList from "@/components/notes/SubjectsList";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 import 'tippy.js/animations/scale.css'
+import { useQuery } from "@tanstack/react-query";
+import { getUserSubjects } from "@/api/userService";
+import { useCurrentUser, useUserPreferences } from "@/hooks/use-user";
+import type { Subject } from "@/types/types";
 
-export const suggestion: Omit<SuggestionOptions, 'editor'> = {
+
+export const createSuggestion = (subjects: Subject[]): Omit<SuggestionOptions, 'editor'> => ({
+
+
     items: ({ query }: { query: string }) => {
-        return SUBJECTS_PLACEHOLDER.filter(subject => subject.name.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5);
+        return subjects.filter(subject => subject.name.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5);
     },
 
     render: () => {
@@ -21,7 +28,7 @@ export const suggestion: Omit<SuggestionOptions, 'editor'> = {
                     editor: props.editor
                 })
 
-                if (!props.clientRect){
+                if (!props.clientRect) {
                     return
                 }
 
@@ -40,7 +47,7 @@ export const suggestion: Omit<SuggestionOptions, 'editor'> = {
             onUpdate(props: any) {
                 component.updateProps(props);
 
-                if (!props.clientRect){
+                if (!props.clientRect) {
                     return
                 }
 
@@ -50,12 +57,12 @@ export const suggestion: Omit<SuggestionOptions, 'editor'> = {
             },
 
             onKeyDown(props: any & { event: KeyboardEvent }) {
-                if(props.event.key === 'Escape'){
+                if (props.event.key === 'Escape') {
                     popup[0].hide();
                     return true
                 }
 
-                return(component.ref as any)?.onKeyDown(props);
+                return (component.ref as any)?.onKeyDown(props);
             },
 
             onExit() {
@@ -64,6 +71,6 @@ export const suggestion: Omit<SuggestionOptions, 'editor'> = {
             }
         }
     }
-}
+})
 
-export default suggestion;
+export default createSuggestion;
