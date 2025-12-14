@@ -121,7 +121,7 @@ const AddSubject = () => {
                                             <option value="" disabled>Selecione um período</option>
                                             {periods?.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()).map((period) => (
                                                 <option key={period.id} value={period.id}>
-                                                    {period.name}
+                                                    {period.name} ({new Date(period.startDate).getUTCFullYear()})
                                                 </option>
                                             ))}
                                         </select>

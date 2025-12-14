@@ -1,6 +1,6 @@
-import type { Note, Page, Period, Subject, User, UserPreferences } from "@/types/types";
+import type { Note, Page, Period, Subject, User, UserPreferences, PageParams, Activity } from "@/types/types";
 import { apiRequest } from "./apiClient";
-import { buildQueryString } from "@/lib/utils";
+import { buildQueryString, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/lib/utils";
 
 
 interface CreateUserParams {
@@ -13,11 +13,7 @@ interface GetUserPreferencesParams {
     userId: string;
 }
 
-interface PageParams {
-    page?: number;
-    size?: number;
-    sort?: string;
-}
+
 
 interface GetUserNotesParams extends PageParams {
     userId: string;
@@ -29,8 +25,10 @@ interface GetUserSubjectsParams extends PageParams {
     search?: string;
 }
 
-const DEFAULT_PAGE_SIZE = 20
-const DEFAULT_PAGE = 0
+interface GetUserActivitiesParams extends PageParams {
+    userId: string;
+    search?: string;
+}
 
 export async function createUser(params: CreateUserParams): Promise<User> {
     const response = await apiRequest<User>(`/users`, {
@@ -70,6 +68,7 @@ export async function getUserSubjects(params: GetUserSubjectsParams): Promise<Pa
         }
     );
 }
+
 
 export async function getUserPeriods(params: { userId: string }): Promise<Period[]> {
     return apiRequest<Period[]>(`/users/${params.userId}/periods`, {

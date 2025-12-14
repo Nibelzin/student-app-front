@@ -7,14 +7,17 @@ import 'tippy.js/animations/scale.css'
 import { useQuery } from "@tanstack/react-query";
 import { getUserSubjects } from "@/api/userService";
 import { useCurrentUser, useUserPreferences } from "@/hooks/use-user";
-import type { Subject } from "@/types/types";
+import type { Activity, Subject } from "@/types/types";
 
 
-export const createSuggestion = (subjects: Subject[]): Omit<SuggestionOptions, 'editor'> => ({
+export const createSuggestion = (subjects: Subject[], activities: Activity[]): Omit<SuggestionOptions, 'editor'> => ({
 
 
     items: ({ query }: { query: string }) => {
-        return subjects.filter(subject => subject.name.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5);
+
+        const filteredSubjects = subjects.filter(subject => subject.name.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5);
+        const filteredActivities = activities.filter(activity => activity.title.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5);
+        return [...filteredSubjects, ...filteredActivities];
     },
 
     render: () => {

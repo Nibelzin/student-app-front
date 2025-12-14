@@ -8,6 +8,7 @@ import Subjects from './pages/Subjects.tsx'
 import SubjectDetails from './pages/SubjectDetails.tsx'
 import AddSubject from './pages/AddSubject.tsx'
 import AddPeriod from './pages/AddPeriod.tsx'
+import AddActivity from './pages/AddActivity.tsx'
 import Login from './pages/auth/Login.tsx'
 import Register from './pages/auth/Register.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "/periods/new",
         element: <AddPeriod />
+      },
+      {
+        path: "/activities/new",
+        element: <AddActivity />
       },
       {
         path: "/subject/:id",

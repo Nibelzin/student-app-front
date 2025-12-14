@@ -1,6 +1,9 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+export const DEFAULT_PAGE_SIZE = 20
+export const DEFAULT_PAGE = 0
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -52,7 +55,7 @@ export const safeParseNoteContent = (content?: string) => {
   }
 }
 
-export const buildQueryString = (params: Record<string, string | number | undefined>): string => {
+export const buildQueryString = (params: Record<string, string | number | boolean | Date | undefined>): string => {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== '') {

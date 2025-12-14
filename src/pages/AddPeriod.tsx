@@ -1,6 +1,7 @@
 import { createPeriod } from '@/api/periodService';
 import { getUserPeriods } from '@/api/userService';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Card } from '@/components/ui/card';
 import {
     Form,
@@ -11,10 +12,14 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useCurrentUser } from '@/hooks/use-user';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { ArrowLeft, CalendarIcon, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
@@ -22,8 +27,8 @@ import { z } from 'zod';
 
 const formSchema = z.object({
     name: z.string().min(1, 'O nome é obrigatório'),
-    startDate: z.string().min(1, 'A data de início é obrigatória'),
-    endDate: z.string().min(1, 'A data de término é obrigatória'),
+    startDate: z.date().min(1, 'A data de início é obrigatória'),
+    endDate: z.date().min(1, 'A data de término é obrigatória'),
     isCurrent: z.boolean().default(false),
 });
 
@@ -44,8 +49,8 @@ const AddPeriod = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: '',
-            startDate: '',
-            endDate: '',
+            startDate: new Date(),
+            endDate: new Date(),
             isCurrent: false,
         },
     });
@@ -70,8 +75,8 @@ const AddPeriod = () => {
         createPeriodMutate({
             userId: user.id,
             name: values.name,
-            startDate: new Date(values.startDate),
-            endDate: new Date(values.endDate),
+            startDate: values.startDate,
+            endDate: values.endDate,
             isCurrent: values.isCurrent,
         });
     }
@@ -111,7 +116,36 @@ const AddPeriod = () => {
                                     <FormItem>
                                         <FormLabel>Data de Início</FormLabel>
                                         <FormControl>
-                                            <Input type="date" {...field} />
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? (
+                                                            format(field.value, "PPP", { locale: ptBR })
+                                                        ) : (
+                                                            <span>Selecione uma data</span>
+                                                        )}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={new Date(field.value)}
+                                                        onSelect={(event) => {
+                                                            field.onChange(event)
+                                                        }}
+                                                        captionLayout='dropdown'
+                                                        disabled={field.disabled}
+                                                        locale={ptBR}
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -125,12 +159,91 @@ const AddPeriod = () => {
                                     <FormItem>
                                         <FormLabel>Data de Término</FormLabel>
                                         <FormControl>
-                                            <Input type="date" {...field} />
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? (
+                                                            format(field.value, "PPP", { locale: ptBR })
+                                                        ) : (
+                                                            <span>Selecione uma data</span>
+                                                        )}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={new Date(field.value)}
+                                                        onSelect={(event) => {
+                                                            field.onChange(event)
+                                                        }}
+                                                        captionLayout='dropdown'
+                                                        disabled={field.disabled}
+                                                        locale={ptBR}
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            {(() => {
+                                const currentYear = new Date().getFullYear();
+                                const suggestions = [
+                                    { name: '1º Semestre', start: new Date(currentYear, 0, 1), end: new Date(currentYear, 5, 30) },
+                                    { name: '2º Semestre', start: new Date(currentYear, 6, 1), end: new Date(currentYear, 11, 31) },
+                                    { name: '1º Trimestre', start: new Date(currentYear, 0, 1), end: new Date(currentYear, 2, 31) },
+                                    { name: '2º Trimestre', start: new Date(currentYear, 3, 1), end: new Date(currentYear, 5, 30) },
+                                    { name: '3º Trimestre', start: new Date(currentYear, 6, 1), end: new Date(currentYear, 8, 30) },
+                                    { name: '4º Trimestre', start: new Date(currentYear, 9, 1), end: new Date(currentYear, 11, 31) },
+                                ];
+
+                                const availableSuggestions = suggestions.filter(suggestion => {
+                                    // Check if suggestion overlaps with any existing period
+                                    const hasOverlap = periods?.some(existing => {
+                                        const existingStart = new Date(existing.startDate);
+                                        const existingEnd = new Date(existing.endDate);
+                                        // Overlap logic: (StartA <= EndB) and (EndA >= StartB)
+                                        return suggestion.start <= existingEnd && suggestion.end >= existingStart;
+                                    });
+                                    return !hasOverlap;
+                                });
+
+                                if (availableSuggestions.length === 0) return null;
+
+                                return (
+                                    <div className="w-full">
+                                        <p className="text-sm text-muted-foreground mb-2">Sugestões Rápidas ({currentYear}):</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {availableSuggestions.map((suggestion) => (
+                                                <Button
+                                                    key={suggestion.name}
+                                                    type="button"
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        form.setValue('name', suggestion.name);
+                                                        form.setValue('startDate', suggestion.start);
+                                                        form.setValue('endDate', suggestion.end);
+                                                    }}
+                                                >
+                                                    {suggestion.name}
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
                         {errorMessage && (
                             <p className="text-sm text-red-600 text-center">
@@ -158,14 +271,16 @@ const AddPeriod = () => {
                     {periods?.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()).map((period) => (
                         <Card key={period.id} className='p-4 shadow-none flex flex-col justify-between'>
                             <div>
-                                <h4 className='font-medium'>{period.name}</h4>
+                                <div className='flex items-center justify-between'>
+                                    <h4 className='font-medium'>{period.name} ({new Date(period.startDate).getUTCFullYear()})</h4>
+                                    {new Date() >= new Date(period.startDate) && new Date() <= new Date(period.endDate) && (
+                                        <span className='text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full w-fit mt-2'>Atual</span>
+                                    )}
+                                </div>
                                 <p className='text-sm text-muted-foreground'>
-                                    {new Date(period.startDate).toLocaleDateString()} - {new Date(period.endDate).toLocaleDateString()}
+                                    {new Date(period.startDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })} - {new Date(period.endDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                                 </p>
                             </div>
-                            {new Date() >= new Date(period.startDate) && new Date() <= new Date(period.endDate) && (
-                                <span className='text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full w-fit mt-2'>Atual</span>
-                            )}
                         </Card>
                     ))}
                     {periods?.length === 0 && (

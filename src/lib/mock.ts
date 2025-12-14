@@ -4,6 +4,7 @@ export const NEXT_ACTIVITIES_PLACEHOLDER: Activity[] = [
     {
         id: '1',
         subjectId: 'math101',
+        subjectName: 'Matemática',
         title: 'Prova de Cálculo I',
         description: 'Capítulos 1 a 5',
         dueDate: new Date('2023-09-10T10:00:00'),
@@ -14,6 +15,7 @@ export const NEXT_ACTIVITIES_PLACEHOLDER: Activity[] = [
     {
         id: '2',
         subjectId: 'cs201',
+        subjectName: 'Ciência da Computação',
         title: 'Entrega do Projeto de Algoritmos',
         description: 'Implementar o algoritmo de ordenação',
         dueDate: new Date('2023-09-12T23:59:59'),
@@ -24,6 +26,7 @@ export const NEXT_ACTIVITIES_PLACEHOLDER: Activity[] = [
     {
         id: '3',
         subjectId: 'hist301',
+        subjectName: 'História',
         title: 'Redação sobre a Revolução Francesa',
         description: 'Mínimo de 1000 palavras',
         dueDate: new Date('2023-09-15T17:00:00'),
@@ -39,7 +42,7 @@ export let QUICK_NOTES_PLACEHOLDER: Note[] = [
         createdAt: new Date('2023-09-01T20:30:00'),
         id: '1',
         userId: 'user1',
-        title: 'Revisão de Matemática',
+
         isPinned: false,
         updatedAt: new Date()
     },
@@ -48,7 +51,7 @@ export let QUICK_NOTES_PLACEHOLDER: Note[] = [
         createdAt: new Date('2023-09-01T14:30:00'),
         id: '2',
         userId: 'user1',
-        title: 'Revisão de Matemática',
+
         isPinned: false,
         updatedAt: new Date()
     }

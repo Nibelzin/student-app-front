@@ -1,5 +1,5 @@
 import type { GridStackWidget } from "gridstack";
-import type { off } from "process";
+
 
 export type User = {
     id: string;
@@ -48,12 +48,12 @@ export type Note = {
 export type Activity = {
     id: string;
     subjectId: string;
+    subjectName: string;
     title: string;
     description?: string;
     dueDate: Date;
     isCompleted: boolean;
     type?: string;
-    reminderAt?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -67,19 +67,37 @@ export type ClassSchedule = {
     location?: string;
 }
 
+export type FileObject = {
+    id: string;
+    name: string;
+    storageProvider: string;
+    bucket: string;
+    storagePath: string;
+    mimeType: string;
+    size: number;
+    checksum: string;
+    createdAt: Date;
+}
+
 export type Material = {
     id: string;
-    subjectId: string;
     title: string;
     type: string;
-    url: string;
+    fileUrl?: string;
+    isFavorite: boolean;
+    createdAt: Date;
+    subjectId?: string;
+    subjectName?: string;
+    activityId?: string;
+    activityName?: string;
+    externalUrl?: string;
 }
 
 export type GradeAttendance = {
     id: string;
     description?: string;
     grade?: number;
-    absences: number 
+    absences: number
 }
 
 export type Widget = {
@@ -131,4 +149,10 @@ export type Page<T> = {
         unpaged: boolean;
     };
     empty: boolean;
+}
+
+export type PageParams = {
+    page?: number;
+    size?: number;
+    sort?: string;
 }

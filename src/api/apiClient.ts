@@ -17,10 +17,16 @@ export async function apiRequest<T>(
 ): Promise<T> {
 
 
+    const headers: Record<string, string> = { ...getAuthHeaders() as Record<string, string> };
+
+    if (options.body instanceof FormData) {
+        delete headers['Content-Type'];
+    }
+
     const response = await fetch(`${apiUrl}${endpoint}`, {
         ...options,
         headers: {
-            ...getAuthHeaders(),
+            ...headers,
             ...options.headers,
         },
     })

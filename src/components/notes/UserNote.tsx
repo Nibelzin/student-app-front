@@ -1,34 +1,51 @@
 import { useMemo } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import { Card } from '../ui/card'
-import type { Note, Subject } from '@/types/types'
-import { Trash2 } from 'lucide-react'
+import type { Activity, Note, Subject } from '@/types/types'
+import { Trash2, Loader2 } from 'lucide-react'
 import { format } from 'date-fns'
 import StarterKit from '@tiptap/starter-kit'
 import Highlight from '@tiptap/extension-highlight'
 import { Placeholder } from '@tiptap/extensions'
 import Mention from '@tiptap/extension-mention'
 import suggestion, { createSuggestion } from '../../lib/suggestion.ts'
-import type { UpdateNoteParams } from '@/api/notesService.ts'
+import { updateNote, deleteNote, type UpdateNoteParams } from '@/api/noteService.ts'
 import { useDebouncedCallback } from '@/hooks/use-debounce.ts'
 import SlashCommand from '@/lib/slashCommand.ts'
 import { safeParseNoteContent } from '@/lib/utils.ts'
 import { useNavigate } from 'react-router'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface UserNoteProps {
     note: Note
     subjects: Subject[] | undefined
-    deleteUserNote: (noteId: string) => void
-    updateUserNote: (updateUserNote: UpdateNoteParams) => Promise<void>
+    activities: Activity[] | undefined
 }
 
 
-const UserNote = ({ note, subjects, deleteUserNote, updateUserNote }: UserNoteProps) => {
+const UserNote = ({ note, subjects, activities }: UserNoteProps) => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient()
 
     const parsedContent = useMemo(() => safeParseNoteContent(note.content), [note.content])
 
-    const debouncedUpdate = useDebouncedCallback(updateUserNote, 500);
+    const { mutate: performUpdate, isPending: isSaving } = useMutation({
+        mutationFn: updateNote,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userNotes'] })
+        }
+    })
+
+    const { mutate: performDelete, isPending: isDeleting } = useMutation({
+        mutationFn: (noteId: string) => deleteNote({ noteId }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userNotes'] })
+        }
+    })
+
+    const debouncedUpdate = useDebouncedCallback((updatedNote: UpdateNoteParams) => {
+        performUpdate(updatedNote)
+    }, 500);
 
     const editor = useEditor({
         onUpdate: ({ editor }) => {
@@ -56,7 +73,7 @@ const UserNote = ({ note, subjects, deleteUserNote, updateUserNote }: UserNotePr
                 renderHTML({ node }) {
                     return ['a', { class: 'mention', 'data-subject-id': node.attrs.id }, `@${node.attrs.label ?? node.attrs.id}`]
                 },
-                suggestion: createSuggestion(subjects ?? [])
+                suggestion: createSuggestion(subjects ?? [], activities ?? [])
             })
         ],
         content: parsedContent,
@@ -89,9 +106,12 @@ const UserNote = ({ note, subjects, deleteUserNote, updateUserNote }: UserNotePr
                 <div className='w-full h-full'>
                     <EditorContent editor={editor} />
                 </div>
-                <div className='flex justify-between'>
-                    <p className='text-xs'>{format(note.updatedAt, 'dd/MM/yyyy HH:mm')}</p>
-                    <Trash2 className='cursor-pointer' size={16} onClick={() => deleteUserNote(note.id)} />
+                <div className='flex justify-between items-center'>
+                    <div className='flex items-center gap-2'>
+                        <p className='text-xs'>{format(note.updatedAt, 'dd/MM/yyyy HH:mm')}</p>
+                        {isSaving && <span className='text-[10px] text-neutral-400 flex items-center gap-1'><Loader2 size={10} className='animate-spin' /> Salvando...</span>}
+                    </div>
+                    {isDeleting ? <Loader2 size={16} className='animate-spin text-red-500' /> : <Trash2 className='cursor-pointer hover:text-red-500 transition-colors' size={16} onClick={() => performDelete(note.id)} />}
                 </div>
             </div>
         </Card>

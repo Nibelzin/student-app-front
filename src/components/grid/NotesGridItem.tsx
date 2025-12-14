@@ -1,14 +1,15 @@
 import type { Note, Page, User } from '@/types/types'
-import { GripVertical, Plus } from 'lucide-react'
+import { CheckCircle2, ExternalLink, GripVertical, NotepadText, Plus } from 'lucide-react'
 import React, { forwardRef, useState } from 'react'
 import { Input } from '../ui/input'
 import { Card } from '../ui/card'
 import UserNote from '../notes/UserNote'
-import { createNote, deleteNote, updateNote, type CreateNoteParams, type UpdateNoteParams } from '@/api/notesService'
-import { useQuery, type QueryClient } from '@tanstack/react-query'
+import { createNote, type CreateNoteParams } from '@/api/noteService'
+import { useQuery, type QueryClient, useMutation } from '@tanstack/react-query'
 import { nodeContainsText, safeParseNoteContent } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { getUserNotes, getUserSubjects } from '@/api/userService'
+import { getActivities } from '@/api/activitiyService'
 
 interface NotesGridItemProps {
   user: User | undefined
@@ -32,12 +33,27 @@ const NotesGridItem = forwardRef<HTMLDivElement, NotesGridItemProps>(({ user, qu
     enabled: !!user?.id,
   })
 
+  const { data: activitiesPage, isPending: isActivitiesLoading } = useQuery({
+    queryKey: ['userActivities', user?.id],
+    queryFn: () => getActivities({ userId: user?.id! }),
+    enabled: !!user?.id,
+  })
+
   const filteredNotes = notesPage?.content
     .slice()
     .sort((a, b) => Number(b.isPinned) - Number(a.isPinned) || new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
-  const addUserNote = async () => {
+  const { mutate: performAddNote } = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['userNotes', user?.id],
+        refetchType: 'all'
+      })
+    }
+  })
 
+  const addUserNote = () => {
     if (!user) return;
 
     const newNote: CreateNoteParams = {
@@ -46,65 +62,39 @@ const NotesGridItem = forwardRef<HTMLDivElement, NotesGridItemProps>(({ user, qu
       content: '{"type":"doc","content":[{"type":"paragraph"}]}'
     }
 
-    try {
-      await createNote(newNote)
-      await queryClient.invalidateQueries({
-        queryKey: ['userNotes', user?.id],
-        refetchType: 'all'
-      })
-    } catch (error) {
-      console.error("Erro ao criar nova nota:", error);
-    }
-  }
-
-  const updateUserNote = async (updatedNote: UpdateNoteParams) => {
-    try {
-      await updateNote(updatedNote)
-    } catch (error) {
-      console.error("Erro ao atualizar nota:", error);
-    }
-  }
-
-  const deleteUserNote = async (noteId: string) => {
-    try {
-      await deleteNote({ noteId })
-      await queryClient.invalidateQueries({
-        queryKey: ['userNotes', user?.id],
-        refetchType: 'all'
-      })
-    } catch (error) {
-      console.error("Erro ao deletar nota:", error);
-    }
+    performAddNote(newNote)
   }
 
   return (
     <div className='grid-stack-item' gs-id="notes" gs-w="2" gs-h="4" ref={ref}>
       <div className='grid-stack-item-content rounded-md border bg-white'>
         <div className=' h-[calc(100%-96px)] overflow'>
-          <div className='p-4 flex flex-col gap-2'>
-            <div className='flex items-center justify-between w-full'>
+          <div className='flex flex-col gap-2'>
+            <div className='flex items-center justify-between gap-2 border-b border-neutral-100 p-3'>
               <div className='flex items-center gap-2'>
-                <GripVertical size={20} className='handle cursor-pointer' />
+                <GripVertical size={20} className='handle cursor-pointer text-neutral-400' />
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">Notas</h2>
               </div>
-              <Plus className='cursor-pointer' size={20} onClick={() => addUserNote()} />
+              <div className='flex items-center gap-2'>
+                <Plus className='cursor-pointer hover:text-blue-500 transition-colors' size={20} onClick={() => addUserNote()} />
+                <ExternalLink className='cursor-pointer hover:text-blue-500 transition-colors' size={20} />
+              </div>
             </div>
-            <div className=''>
+            <div className='px-3'>
               <Input placeholder='Pesquisar Notas...' className='shadow-none' value={noteSearch} onChange={(e) => setNoteSearch(e.target.value)} />
             </div>
           </div>
-          <div className='px-4 pb-4 h-full overflow-y-auto'>
+          <div className='px-3 py-2 h-full overflow-y-auto'>
             {filteredNotes?.length === 0 ? (
-              <div className='h-full'>
-                <Card className="flex items-center justify-center h-full p-4 text-center text-neutral-500 dark:bg-neutral-900/40 shadow-none">
-                  Adicione suas notas rápidas aqui para acessá-las facilmente!
-                </Card>
+              <div className="flex flex-col items-center justify-center h-full text-neutral-500 py-8">
+                <NotepadText size={32} className="mb-2 opacity-20" />
+                <p className="text-sm">Comece a fazer suas anotações</p>
               </div>
             ) : (
               <div>
                 <div className="flex flex-col gap-3">
                   {filteredNotes?.map(note => (
-                    <UserNote subjects={subjectsPage?.content} key={note.id} updateUserNote={updateUserNote} deleteUserNote={deleteUserNote} note={note} />
+                    <UserNote subjects={subjectsPage?.content} activities={activitiesPage?.content} key={note.id} note={note} />
                   ))}
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import type { Subject } from "@/types/types";
+import type { Subject, Material } from "@/types/types";
 import { apiRequest } from "./apiClient";
 
 export type CreateSubjectParams = {
@@ -14,5 +14,11 @@ export async function createSubject(params: CreateSubjectParams): Promise<Subjec
     return apiRequest<Subject>(`/subjects`, {
         method: 'POST',
         body: JSON.stringify(params),
+    });
+}
+
+export async function getSubjectMaterials(subjectId: string): Promise<Material[]> {
+    return apiRequest<Material[]>(`/subjects/${subjectId}/materials`, {
+        method: 'GET',
     });
 }
