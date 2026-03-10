@@ -1,4 +1,4 @@
-import { Calendar, ChevronUp, Home, Inbox, Notebook, Search, Settings, User2 } from "lucide-react"
+import { Calendar, ChevronUp, Home, Inbox, Notebook, Search, Settings, User2, Trophy } from "lucide-react"
 
 import {
     Sidebar,
@@ -39,15 +39,20 @@ const items = [
         icon: Search,
     },
     {
-        title: "Settings",
-        url: "#",
+        title: "Laboratório Game",
+        url: "/gamification",
+        icon: Trophy,
+    },
+    {
+        title: "Configurações",
+        url: "/settings",
         icon: Settings,
     },
 ]
 
 export function AppSidebar() {
 
-    const { data: user, isLoading } = useCurrentUser();
+    const { data: user } = useCurrentUser();
     const location = useLocation();
 
     const handleLogout = () => {
@@ -55,7 +60,7 @@ export function AppSidebar() {
     }
 
     return (
-        <Sidebar collapsible="icon" variant="sidebar" className="bg-white">
+        <Sidebar collapsible="icon" variant="sidebar">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -106,7 +111,7 @@ export function AppSidebar() {
                                         Administração
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
-                                <DropdownMenuSeparator/>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
                                     <DropdownMenuItem className="text-red-500" onClick={handleLogout}>
                                         Sair

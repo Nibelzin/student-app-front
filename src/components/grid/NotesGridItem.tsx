@@ -10,6 +10,7 @@ import { nodeContainsText, safeParseNoteContent } from '@/lib/utils'
 import { useDebounce } from '@/hooks/use-debounce'
 import { getUserNotes, getUserSubjects } from '@/api/userService'
 import { getActivities } from '@/api/activitiyService'
+import { useNavigate } from 'react-router'
 
 interface NotesGridItemProps {
   user: User | undefined
@@ -17,6 +18,7 @@ interface NotesGridItemProps {
 }
 
 const NotesGridItem = forwardRef<HTMLDivElement, NotesGridItemProps>(({ user, queryClient }, ref) => {
+  const navigate = useNavigate();
 
   const [noteSearch, setNoteSearch] = useState<string>('')
   const debouncedSearch = useDebounce(noteSearch, 300);
@@ -67,17 +69,17 @@ const NotesGridItem = forwardRef<HTMLDivElement, NotesGridItemProps>(({ user, qu
 
   return (
     <div className='grid-stack-item' gs-id="notes" gs-w="2" gs-h="4" ref={ref}>
-      <div className='grid-stack-item-content rounded-md border bg-white'>
+      <div className='grid-stack-item-content rounded-sm border bg-background'>
         <div className=' h-[calc(100%-96px)] overflow'>
           <div className='flex flex-col gap-2'>
-            <div className='flex items-center justify-between gap-2 border-b border-neutral-100 p-3'>
+            <div className='flex items-center justify-between gap-2 border-b border-accent p-3'>
               <div className='flex items-center gap-2'>
-                <GripVertical size={20} className='handle cursor-pointer text-neutral-400' />
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">Notas</h2>
+                <GripVertical size={20} className='handle cursor-pointer' />
+                <h2 className="text-sm font-semibold uppercase tracking-wide">Notas</h2>
               </div>
               <div className='flex items-center gap-2'>
                 <Plus className='cursor-pointer hover:text-blue-500 transition-colors' size={20} onClick={() => addUserNote()} />
-                <ExternalLink className='cursor-pointer hover:text-blue-500 transition-colors' size={20} />
+                <ExternalLink className='cursor-pointer hover:text-blue-500 transition-colors' size={20} onClick={() => navigate('/notes')} />
               </div>
             </div>
             <div className='px-3'>

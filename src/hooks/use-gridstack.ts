@@ -10,7 +10,7 @@ export function useGridStack(preferences?: UserPreferences, isLoading: boolean =
 
     useEffect(() => {
 
-        if(isLoading) return
+        if (isLoading) return
 
         const saveLayout = () => {
             if (gridRef.current) {
@@ -28,6 +28,7 @@ export function useGridStack(preferences?: UserPreferences, isLoading: boolean =
         const timer = setTimeout(() => {
             const grid = GridStack.init({
                 marginUnit: 'px',
+                margin: 8,
                 handle: '.handle',
                 cellHeight: '100px',
                 columnOpts: {

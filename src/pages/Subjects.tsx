@@ -11,7 +11,6 @@ const Subjects = () => {
   const navigate = useNavigate();
 
   const { data: user, isPending: isUserLoading } = useCurrentUser();
-  const { data: userPreferences, isPending: isPreferencesLoading } = useUserPreferences(user?.id);
 
   const { data: subjectsPage, isPending: isSubjectsLoading } = useQuery({
     queryKey: ['userSubjects', user?.id],
@@ -22,7 +21,7 @@ const Subjects = () => {
   return (
     <main className="mx-auto w-full max-w-screen-2xl p-8 mb-16 sm:p-6 md:p-12 lg:px-12 xl:px-24 2xl:px-32">
       <header className="flex gap-4 m-4 mb-12">
-        <h1 className="text-2xl font-semibold">Matérias</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Matérias</h1>
       </header>
       <div className="flex justify-center">
         <div className='w-full md:w-fit grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4'>

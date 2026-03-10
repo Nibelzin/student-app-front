@@ -15,7 +15,7 @@ const Header = () => {
 
 
   return (
-    <header className='border-b p-2 flex items-center justify-between bg-white'>
+    <header className='py-2 h-12 px-4 flex items-center justify-between sticky top-0 z-50 shadow-sm'>
       <div className='flex gap-4 items-center'>
         <Button
           variant='ghost'

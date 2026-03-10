@@ -254,7 +254,7 @@ const AddActivity = () => {
 
     return (
         <main className="mx-auto w-full max-w-screen-2xl p-8 mb-16 sm:p-6 md:p-12 lg:px-12 xl:px-24 2xl:px-32">
-            <header className="flex gap-4 my-4 mb-8 items-center">
+            <header className="flex gap-4 mb-8 items-center">
                 <Button variant="outline" className='shadow-none' size="icon" onClick={() => navigate('/')}>
                     <ArrowLeft className="h-4 w-4" />
                 </Button>

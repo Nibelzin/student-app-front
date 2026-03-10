@@ -12,7 +12,7 @@ const HomeGrid = ({ userPreferences, isLoading, children }: HomeGridProps) => {
     const { isReady: isGridReady } = useGridStack(userPreferences, isLoading);
 
     return (
-        <div className={`grid-stack ${isGridReady ? 'grid-ready' : ''}`}>
+        <div className={` grid-stack ${isGridReady ? 'grid-ready' : ''}`}>
             {children}
         </div>
     )

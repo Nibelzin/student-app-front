@@ -7,8 +7,14 @@ export type User = {
     email: string;
     course: string;
     currentSemester?: number;
+    currentXp: number;
+    currentLevel: number;
+    coins: number;
+    currentStreak: number;
+    lastActivityDate: Date;
     createdAt: Date;
     updatedAt?: Date;
+    role: string;
     periods?: Period[];
 }
 
@@ -32,6 +38,7 @@ export type Subject = {
     professor?: string;
     classroom?: string;
     color: string;
+    maxAbsencesAllowed: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -45,6 +52,11 @@ export type Note = {
     updatedAt: Date;
 }
 
+export type CheckListItem = {
+    description: string;
+    isDone: boolean;
+}
+
 export type Activity = {
     id: string;
     subjectId: string;
@@ -55,6 +67,7 @@ export type Activity = {
     isCompleted: boolean;
     type?: string;
     createdAt: Date;
+    checkList?: CheckListItem[];
     updatedAt: Date;
 }
 

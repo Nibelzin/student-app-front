@@ -41,18 +41,21 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.35.2",
     "gridstack": "^12.3.3",
     "lucide-react": "^0.541.0",
+    "radix-ui": "^1.4.3",
     "react": "^19.1.1",
     "react-day-picker": "^9.12.0",
     "react-dom": "^19.1.1",
-    "react-hook-form": "^7.68.0",
+    "react-hook-form": "^7.71.2",
     "react-markdown": "^10.1.0",
     "react-router": "^7.8.2",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
     "tippy.js": "^6.3.7",
-    "zod": "^4.1.13"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

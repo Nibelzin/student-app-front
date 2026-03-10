@@ -1,4 +1,4 @@
-import type { Activity, Material, Page, PageParams } from "@/types/types";
+import type { Activity, CheckListItem, Material, Page, PageParams } from "@/types/types";
 import { apiRequest } from "./apiClient";
 import { buildQueryString, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/lib/utils";
 
@@ -14,6 +14,7 @@ interface UpdateActivityParams {
     id: string;
     title?: string;
     description?: string;
+    checkList?: CheckListItem[];
     dueDate?: Date;
     isCompleted?: boolean;
 }
@@ -42,6 +43,7 @@ export async function updateActivity(params: UpdateActivityParams): Promise<Acti
 interface CreateActivityParams {
     title: string;
     description?: string;
+    checkList?: CheckListItem[];
     dueDate: Date;
     type?: string;
     subjectId: string;

@@ -27,5 +27,20 @@ export function logout() {
 
 export function isAuthenticated(): boolean {
     const token = localStorage.getItem('authToken');
-    return !!token;
+    if (!token) return false;
+
+    try {
+        const payloadBase64Url = token.split('.')[1];
+        const payloadBase64 = payloadBase64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const decodedJson = atob(payloadBase64);
+        const decoded = JSON.parse(decodedJson);
+
+        if (decoded.exp) {
+            return Date.now() < decoded.exp * 1000;
+        }
+
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
