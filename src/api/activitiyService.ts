@@ -14,7 +14,7 @@ interface UpdateActivityParams {
     id: string;
     title?: string;
     description?: string;
-    checkList?: CheckListItem[];
+    checklist?: CheckListItem[];
     dueDate?: Date;
     isCompleted?: boolean;
 }
@@ -31,6 +31,15 @@ export async function getActivities(params: GetActivitiesParams): Promise<Page<A
     );
 }
 
+export async function getActivityById(id: string): Promise<Activity> {
+    return apiRequest<Activity>(`/activity/${id}`,
+        {
+            method: 'GET',
+        }
+    );
+}
+
+
 export async function updateActivity(params: UpdateActivityParams): Promise<Activity> {
     return apiRequest<Activity>(`/activity/${params.id}`,
         {
@@ -43,13 +52,14 @@ export async function updateActivity(params: UpdateActivityParams): Promise<Acti
 interface CreateActivityParams {
     title: string;
     description?: string;
-    checkList?: CheckListItem[];
+    checklist?: CheckListItem[];
     dueDate: Date;
     type?: string;
     subjectId: string;
 }
 
 export async function createActivity(params: CreateActivityParams): Promise<Activity> {
+
     return apiRequest<Activity>(`/activity`,
         {
             method: 'POST',

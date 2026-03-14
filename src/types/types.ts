@@ -67,7 +67,7 @@ export type Activity = {
     isCompleted: boolean;
     type?: string;
     createdAt: Date;
-    checkList?: CheckListItem[];
+    checklist?: CheckListItem[];
     updatedAt: Date;
 }
 
@@ -168,4 +168,12 @@ export type PageParams = {
     page?: number;
     size?: number;
     sort?: string;
+}
+
+export type FocusSession = {
+    durationSeconds: number;
+    isCompleted: boolean;
+    userId: string;
+    subjectId?: string;
+    activityId?: string;
 }

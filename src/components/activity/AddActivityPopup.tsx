@@ -131,13 +131,25 @@ function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
         }
 
         try {
-            const newActivity = await createActivityMutate({
+
+            const activityData = {
                 title: values.title,
                 description: values.description,
                 dueDate: values.dueDate,
                 type: values.type,
                 subjectId: values.subjectId,
                 checkList: values.checkList?.filter(c => c.description.trim() !== '') || []
+            }
+
+            console.log("NEW ACTIVITY: ", activityData)
+
+            const newActivity = await createActivityMutate({
+                title: values.title,
+                description: values.description,
+                dueDate: values.dueDate,
+                type: values.type,
+                subjectId: values.subjectId,
+                checklist: values.checkList?.filter(c => c.description.trim() !== '') || []
             })
 
             await handleAttachments(newActivity.id, values.subjectId)

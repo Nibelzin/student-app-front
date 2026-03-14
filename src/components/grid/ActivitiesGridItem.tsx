@@ -71,36 +71,34 @@ export const ActivityItem = ({ activity }: ActivityItemProps) => {
     }
 
     const { mutate: toggleChecklistItem } = useMutation({
-        mutationFn: (updatedCheckList: CheckListItem[]) => updateActivity({ ...activity, checkList: updatedCheckList }),
+        mutationFn: (updatedCheckList: CheckListItem[]) => updateActivity({ ...activity, checklist: updatedCheckList }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['activities'] })
         }
     })
 
     const handleChecklistItemToggle = (index: number) => {
-        if (!activity.checkList) return;
-        const newChecklist = [...activity.checkList];
+        if (!activity.checklist) return;
+        const newChecklist = [...activity.checklist];
         newChecklist[index].isDone = !newChecklist[index].isDone;
         toggleChecklistItem(newChecklist);
     }
 
     const detailsIcon = showDetails ? <ChevronUp size={16} onClick={() => setShowDetails(!showDetails)} /> : <ChevronDown size={16} onClick={() => setShowDetails(!showDetails)} />
 
-    const allChecklistDone = activity.checkList && activity.checkList.length > 0 && activity.checkList.every(item => item.isDone);
-
     return (
         <Card
             className="p-3 dark:bg-neutral-900/40 hover:shadow-md shadow-none transition-shadow border-l-4 rounded-sm"
-            style={{ borderLeftColor: activity.isCompleted || allChecklistDone ? '#22c55e' : (new Date(activity.dueDate) < new Date() ? '#ef4444' : '#3b82f6') }}
+            style={{ borderLeftColor: activity.isCompleted ? '#22c55e' : (new Date(activity.dueDate) < new Date() ? '#ef4444' : '#3b82f6') }}
         >
             <div className='flex flex-col justify-between'>
                 <div className="flex justify-between items-start">
                     <div className='space-y-1'>
-                        <p className={`font-medium text-sm leading-none ${(activity.isCompleted || allChecklistDone) ? 'line-through text-neutral-500' : ''}`}>{activity.title}</p>
+                        <p className={`font-medium text-sm leading-none ${(activity.isCompleted) ? 'line-through text-neutral-500' : ''}`}>{activity.title}</p>
                         <p className='text-xs text-neutral-500'>{activity.subjectName}</p>
                     </div>
                     <div className="text-right flex flex-col items-end justify-end gap-1">
-                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${activity.isCompleted || allChecklistDone
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${activity.isCompleted
                             ? 'bg-green-100 text-green-700'
                             : new Date(activity.dueDate) < new Date()
                                 ? 'bg-red-100 text-red-700'
@@ -110,17 +108,17 @@ export const ActivityItem = ({ activity }: ActivityItemProps) => {
                         </span>
                         {showDetails && (
                             <div className={`flex items-center gap-1 text-xs`}>
-                                <div className={`flex items-center gap-1 text-xs ${activity.isCompleted || allChecklistDone ? 'text-green-700' : new Date(activity.dueDate) < new Date() ? 'text-red-700' : 'text-blue-700'}`}>
-                                    {activity.isCompleted || allChecklistDone ? <CheckCircle2 size={12} /> : new Date(activity.dueDate) < new Date() ? <AlertCircle size={12} /> : <ClockIcon size={12} />}
+                                <div className={`flex items-center gap-1 text-xs ${activity.isCompleted ? 'text-green-700' : new Date(activity.dueDate) < new Date() ? 'text-red-700' : 'text-blue-700'}`}>
+                                    {activity.isCompleted ? <CheckCircle2 size={12} /> : new Date(activity.dueDate) < new Date() ? <AlertCircle size={12} /> : <ClockIcon size={12} />}
                                 </div>
-                                {activity.isCompleted || allChecklistDone ? 'Concluído' : new Date(activity.dueDate) < new Date() ? 'Atrasado' : 'Pendente'}
+                                {activity.isCompleted ? 'Concluído' : new Date(activity.dueDate) < new Date() ? 'Atrasado' : 'Pendente'}
                             </div>
 
                         )}
                     </div>
                 </div>
                 {
-                    showDetails && ((activity.description || activity.checkList?.length || (materials && materials.length > 0)) != null) && (
+                    showDetails && ((activity.description || activity.checklist?.length || (materials && materials.length > 0)) != null) && (
                         <>
                             <div className="flex justify-between items-start mt-2 mb-4">
                                 <div className='text-xs text-neutral-500 whitespace-pre-wrap'>
@@ -129,9 +127,9 @@ export const ActivityItem = ({ activity }: ActivityItemProps) => {
                             </div>
 
                             {
-                                activity.checkList && activity.checkList.length > 0 && (
+                                activity.checklist && activity.checklist.length > 0 && (
                                     <div className="flex flex-col gap-2 mb-4">
-                                        {activity.checkList.map((item, idx) => (
+                                        {activity.checklist.map((item, idx) => (
                                             <div key={idx} className="flex items-center gap-2 cursor-pointer" onClick={() => handleChecklistItemToggle(idx)}>
                                                 <div className={`w-4 h-4 min-w-[16px] rounded border flex items-center justify-center transition-colors ${item.isDone ? 'bg-green-500 border-green-500 text-white' : 'border-neutral-300 dark:border-neutral-600'}`}>
                                                     {item.isDone && <CheckCircle2 size={12} />}
@@ -195,7 +193,7 @@ export const ActivityItem = ({ activity }: ActivityItemProps) => {
                             toggleCompletion()
                         }}
                     >
-                        {activity.isCompleted || allChecklistDone ? 'Desfazer Conclusão' : 'Concluir'}
+                        {activity.isCompleted ? 'Desfazer Conclusão' : 'Concluir'}
                     </Button>
                 </div>
                 <div className='flex justify-center mt-2'>

@@ -4,6 +4,9 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import { SidebarProvider, useSidebar } from '@/components/ui/sidebar'
 import { useMemo, useState } from 'react'
 import { Outlet } from 'react-router'
+import { FocusSessionProvider } from '@/context/FocusSessionContext'
+import FocusSessionPopup from '@/components/focus-session/FocusSessionPopup'
+import FocusSessionMinimizedWidget from '@/components/focus-session/FocusSessionMinimizedWidget'
 
 const MainLayout = () => {
 
@@ -15,15 +18,19 @@ const MainLayout = () => {
   }, [])
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar />
-      <div className='w-full h-screen overflow-hidden'>
-        <Header />
-        <div className='h-full overflow-auto'>
-          <ProtectedRoute />
+    <FocusSessionProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar />
+        <div className='w-full h-screen overflow-hidden'>
+          <Header />
+          <div className='h-full overflow-auto'>
+            <ProtectedRoute />
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+        <FocusSessionPopup />
+        <FocusSessionMinimizedWidget />
+      </SidebarProvider>
+    </FocusSessionProvider>
   )
 }
 
