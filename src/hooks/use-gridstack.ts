@@ -45,26 +45,34 @@ export function useGridStack(preferences?: UserPreferences, isLoading: boolean =
 
             gridRef.current = grid;
 
+            const DEFAULT_WIDGETS: GridStackWidget[] = [
+                { id: 'activities' },
+                { id: 'notes' },
+                { id: 'files' },
+                { id: 'focus-timer' },
+            ];
+
             let layoutToLoad: GridStackWidget[] | null = null;
 
             if (preferences && preferences.dashboardLayout) {
                 layoutToLoad = preferences.dashboardLayout;
-                console.log("Carregando layout das preferências do usuário:", layoutToLoad);
             } else {
                 const savedLayout = localStorage.getItem('grid-layout');
                 if (savedLayout) {
                     try {
                         layoutToLoad = JSON.parse(savedLayout);
-                        console.log("Layout salvo encontrado:", layoutToLoad);
                     } catch (e) {
                         console.error('Erro ao carregar layout salvo:', e);
                     }
                 }
             }
 
-            console.log("Layout a ser carregado:", layoutToLoad);
-
             if (layoutToLoad) {
+                DEFAULT_WIDGETS.forEach(widget => {
+                    if (!layoutToLoad!.find(w => w.id === widget.id)) {
+                        layoutToLoad!.push(widget);
+                    }
+                });
                 grid.load(layoutToLoad);
             }
 

@@ -3,7 +3,7 @@ import { GripVertical, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, ClockI
 import React, { forwardRef, useState } from 'react'
 import { Card } from '../ui/card'
 import type { User, Activity, Material, CheckListItem } from '@/types/types'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, QueryClient } from '@tanstack/react-query'
 import { Toggle } from '../ui/toggle'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -209,9 +209,10 @@ export const ActivityItem = ({ activity }: ActivityItemProps) => {
 
 interface ActivitiesGridItemProps {
     user: User | undefined
+    queryClient: QueryClient
 }
 
-const ActivitiesGridItem = forwardRef<HTMLDivElement, ActivitiesGridItemProps>(({ user }, ref) => {
+const ActivitiesGridItem = forwardRef<HTMLDivElement, ActivitiesGridItemProps>(({ user, queryClient }, ref) => {
     const navigate = useNavigate()
     const [isCompleted, setIsCompleted] = useState<boolean | undefined>(undefined)
     const [isOverdue, setIsOverdue] = useState<boolean | undefined>(undefined)

@@ -10,6 +10,7 @@ import ActivitiesGridItem from '@/components/grid/ActivitiesGridItem'
 import FilesGridItem from '@/components/grid/FilesGridItem'
 import coverImage from '../assets/fundo-espaco.jpg'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import FocusTimerGridItem from '@/components/grid/FocusTimerGridItem'
 
 const Home = () => {
     const queryClient = useQueryClient();
@@ -20,6 +21,7 @@ const Home = () => {
     const notesRef = useRef<HTMLDivElement>(null);
     const filesRef = useRef<HTMLDivElement>(null);
     const activitiesRef = useRef<HTMLDivElement>(null);
+    const focusTimerRef = useRef<HTMLDivElement>(null);
 
     const xpToNextLevel = user?.currentLevel! * 100;
     const currentLevelProgressPercentage = Math.min(user?.currentXp!, xpToNextLevel) / xpToNextLevel * 100;
@@ -74,6 +76,7 @@ const Home = () => {
                         <ActivitiesGridItem user={user} queryClient={queryClient} ref={activitiesRef} />
                         <NotesGridItem user={user} queryClient={queryClient} ref={notesRef} />
                         <FilesGridItem user={user} queryClient={queryClient} ref={filesRef} />
+                        <FocusTimerGridItem ref={focusTimerRef} />
                     </HomeGrid>
                 </div>
             </main>
