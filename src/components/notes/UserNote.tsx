@@ -100,9 +100,9 @@ const UserNote = ({ note, subjects, activities }: UserNoteProps) => {
     return (
         <Card
             key={note.id}
-            className="p-4 bg-white dark:bg-neutral-900/40 shadow-none"
+            className="p-4 dark:bg-neutral-900/40 shadow-none"
         >
-            <div className='flex flex-col justify-between'>
+            <div className='flex flex-col justify-between min-h-96'>
                 <div className='w-full h-full'>
                     <EditorContent editor={editor} />
                 </div>
