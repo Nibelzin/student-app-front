@@ -45,13 +45,6 @@ export function useGridStack(preferences?: UserPreferences, isLoading: boolean =
 
             gridRef.current = grid;
 
-            const DEFAULT_WIDGETS: GridStackWidget[] = [
-                { id: 'activities' },
-                { id: 'notes' },
-                { id: 'files' },
-                { id: 'focus-timer' },
-            ];
-
             let layoutToLoad: GridStackWidget[] | null = null;
 
             if (preferences && preferences.dashboardLayout) {
@@ -68,12 +61,7 @@ export function useGridStack(preferences?: UserPreferences, isLoading: boolean =
             }
 
             if (layoutToLoad) {
-                DEFAULT_WIDGETS.forEach(widget => {
-                    if (!layoutToLoad!.find(w => w.id === widget.id)) {
-                        layoutToLoad!.push(widget);
-                    }
-                });
-                grid.load(layoutToLoad);
+                grid.load(layoutToLoad, false);
             }
 
 
