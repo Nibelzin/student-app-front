@@ -15,6 +15,7 @@ import { createMaterial, createMaterialWithFile } from '@/api/materialService'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createActivity } from '@/api/activitiyService'
 import { getUserSubjects } from '@/api/userService'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { cn } from '@/lib/utils'
 import { ptBR } from 'date-fns/locale'
 import type { User } from '@/types/types'
@@ -204,20 +205,24 @@ function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Matéria</FormLabel>
-                                        <FormControl>
-                                            <select
-                                                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                                                {...field}
-                                                disabled={isSubjectsLoading}
-                                            >
-                                                <option value="" disabled>Selecione uma matéria</option>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                            disabled={isSubjectsLoading}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Selecione uma matéria" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
                                                 {subjectsPage?.content.map((subject) => (
-                                                    <option key={subject.id} value={subject.id}>
+                                                    <SelectItem key={subject.id} value={subject.id}>
                                                         {subject.name}
-                                                    </option>
+                                                    </SelectItem>
                                                 ))}
-                                            </select>
-                                        </FormControl>
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -235,7 +240,7 @@ function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
                                                     <Button
                                                         variant={"outline"}
                                                         className={cn(
-                                                            "w-full pl-3 text-left font-normal",
+                                                            "w-full pl-3 text-left font-normal rounded-md",
                                                             !field.value && "text-muted-foreground"
                                                         )}
                                                     >
