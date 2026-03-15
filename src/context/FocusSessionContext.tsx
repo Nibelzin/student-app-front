@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { Activity } from '@/types/types'
-import { awardFocusSessionXP, createFocusSession, type FocusSessionResponse } from '@/api/focusSessionService'
+import { awardFocusSessionXP, createFocusSession, updateFocusSession, type FocusSessionResponse } from '@/api/focusSessionService'
 import { getActivityById, updateActivity } from '@/api/activitiyService'
 import { useFocusTimer } from '@/hooks/use-focus-timer'
 import { useCurrentUser } from '@/hooks/use-user'
@@ -64,6 +64,7 @@ export function FocusSessionProvider({ children }: { children: React.ReactNode }
     const selectedActivityRef = useRef<Activity | null>(null)
     const isCompletingRef = useRef(false) // prevent double-fire in StrictMode
     const clickOriginRef = useRef<{ x: number, y: number } | null>(null)
+    const sessionIdRef = useRef<string | null>(null)
 
     useEffect(() => { totalRef.current = totalSeconds }, [totalSeconds])
     useEffect(() => { selectedActivityRef.current = selectedActivity }, [selectedActivity])
@@ -74,32 +75,33 @@ export function FocusSessionProvider({ children }: { children: React.ReactNode }
 
         setPhase('idle')
         const total = totalRef.current
-        const activity = selectedActivityRef.current
+        const sessionId = sessionIdRef.current
 
         try {
-            const result = await createFocusSession({
-                durationSeconds: total,
-                isCompleted: true,
-                userId: user!.id,
-                activityId: activity?.id,
-            })
-            setLastSessionResult(result)
-            toast.success(`Sessão concluída! +${result.xpEarned} XP`, {
-                description: 'Continue assim para subir de nível!',
-                duration: 5000,
-            })
-            queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
+            if (sessionId) {
+                const result = await updateFocusSession(sessionId, {
+                    durationSeconds: total,
+                    isCompleted: true,
+                })
+                setLastSessionResult(result)
+                toast.success(`Sessão concluída! +${result.xpEarned} XP`, {
+                    description: 'Continue assim para subir de nível!',
+                    duration: 5000,
+                })
+                queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
+            }
         } catch {
             toast.error('Erro ao salvar sessão')
         }
 
+        sessionIdRef.current = null
         setElapsedSeconds(0)
         elapsedRef.current = 0
         setIsMinimized(false)
         setIsPopupOpen(true)
         setPhase('completed')
         isCompletingRef.current = false
-    }, [user, queryClient])
+    }, [queryClient])
 
     // Tick: increment elapsed by 1 second
     const onTick = useCallback(() => {
@@ -175,8 +177,13 @@ export function FocusSessionProvider({ children }: { children: React.ReactNode }
         setMidSessionCompleting(false)
         setLastSessionResult(null)
         isCompletingRef.current = false
+        sessionIdRef.current = null
         setPhase('running')
-    }, [])
+
+        createFocusSession({ userId: user!.id, activityId: activity?.id })
+            .then(session => { sessionIdRef.current = session.id })
+            .catch(() => toast.error('Erro ao iniciar sessão'))
+    }, [user])
 
     const updateSelectedActivity = useCallback(async (activityId: string) => {
         const activity = await getActivityById(activityId)
@@ -191,14 +198,7 @@ export function FocusSessionProvider({ children }: { children: React.ReactNode }
 
         try {
             await updateActivity({ id: activity.id, isCompleted: true })
-            await createFocusSession({
-                durationSeconds: elapsedRef.current,
-                isCompleted: false,
-                userId: user!.id,
-                activityId: activity.id,
-            })
             queryClient.invalidateQueries({ queryKey: ['activities'] })
-            queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
             confetti({
                 particleCount: 100,
                 spread: 150,
@@ -209,10 +209,8 @@ export function FocusSessionProvider({ children }: { children: React.ReactNode }
             toast.error('Erro ao salvar progresso da atividade')
         }
 
-        setElapsedSeconds(0)
-        elapsedRef.current = 0
         setMidSessionCompleting(true)
-    }, [user, queryClient])
+    }, [queryClient])
 
     const selectNewActivity = useCallback((activity: Activity | null) => {
         setSelectedActivity(activity)
@@ -223,15 +221,13 @@ export function FocusSessionProvider({ children }: { children: React.ReactNode }
     const endSession = useCallback(async () => {
         setPhase('idle')
         const elapsed = elapsedRef.current
-        const activity = selectedActivityRef.current
+        const sessionId = sessionIdRef.current
 
         try {
-            if (elapsed > 0) {
-                await createFocusSession({
+            if (elapsed > 0 && sessionId) {
+                await updateFocusSession(sessionId, {
                     durationSeconds: elapsed,
                     isCompleted: false,
-                    userId: user!.id,
-                    activityId: activity?.id,
                 })
             }
             toast.info('Sessão encerrada')
@@ -239,13 +235,14 @@ export function FocusSessionProvider({ children }: { children: React.ReactNode }
             toast.error('Erro ao salvar sessão')
         }
 
+        sessionIdRef.current = null
         setElapsedSeconds(0)
         elapsedRef.current = 0
         setSelectedActivity(null)
         setMidSessionCompleting(false)
         setIsPopupOpen(false)
         setIsMinimized(false)
-    }, [user])
+    }, [])
 
     const remainingSeconds = Math.max(0, totalSeconds - elapsedSeconds)
 

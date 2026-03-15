@@ -1,11 +1,14 @@
 import { apiRequest } from "./apiClient";
 
-export interface FocusSessionRequest {
-    durationSeconds: number;
-    isCompleted: boolean;
+export interface FocusSessionCreateRequest {
     userId: string;
     subjectId?: string;
     activityId?: string;
+}
+
+export interface FocusSessionUpdateRequest {
+    durationSeconds: number;
+    isCompleted: boolean;
 }
 
 export interface FocusSessionResponse {
@@ -27,11 +30,21 @@ export interface FocusSessionTickResponse {
     leveldUp: boolean;
 }
 
-export const createFocusSession = async (sessionData: FocusSessionRequest): Promise<FocusSessionResponse> => {
+export const createFocusSession = async (sessionData: FocusSessionCreateRequest): Promise<FocusSessionResponse> => {
     const response = await apiRequest<FocusSessionResponse>('/focus-sessions', 
         {
             method: 'POST',
             body: JSON.stringify(sessionData),
+        }
+    );
+    return response;
+};
+
+export const updateFocusSession = async (sessionId: string, updateData: FocusSessionUpdateRequest): Promise<FocusSessionResponse> => {
+    const response = await apiRequest<FocusSessionResponse>(`/focus-sessions/${sessionId}`, 
+        {
+            method: 'PUT',
+            body: JSON.stringify(updateData),
         }
     );
     return response;
