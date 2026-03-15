@@ -3,7 +3,6 @@ import { getUserSubjects } from '@/api/userService'
 import Combobox from '@/components/Combobox'
 import SubjectCard from '@/components/SubjectCard'
 import { useCurrentUser, useUserPreferences } from '@/hooks/use-user'
-import { SUBJECTS_PLACEHOLDER } from '@/lib/mock'
 import { useQuery } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 

@@ -1,12 +1,8 @@
 import { ReactRenderer } from "@tiptap/react";
 import tippy, { type Instance } from 'tippy.js'
-import { SUBJECTS_PLACEHOLDER } from "./mock";
 import SubjectsList from "@/components/notes/SubjectsList";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 import 'tippy.js/animations/scale.css'
-import { useQuery } from "@tanstack/react-query";
-import { getUserSubjects } from "@/api/userService";
-import { useCurrentUser, useUserPreferences } from "@/hooks/use-user";
 import type { Activity, Subject } from "@/types/types";
 
 
