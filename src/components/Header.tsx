@@ -1,11 +1,13 @@
-import { Bell, Menu } from 'lucide-react'
+import { Bell, Loader2, Menu } from 'lucide-react'
 import { Button } from './ui/button'
 import { useSidebar } from './ui/sidebar'
+import { useCurrentUser } from '@/hooks/use-user'
 
 
 
 const Header = () => {
   const {setOpen, open, openMobile, setOpenMobile } = useSidebar()
+  const { data: user, isPending: isUserLoading } = useCurrentUser();
 
   const handleOpenSidebar = () => {
     setOpen(!open)
@@ -27,7 +29,8 @@ const Header = () => {
           <span className='sr-only'>Abrir menu lateral</span>
         </Button>
       </div>
-      <div className='flex gap-2 items-center'>
+      <div className='flex gap-4 items-center'>
+        {isUserLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <span className='text-sm font-medium'>Lvl {user?.currentLevel}</span>}
         <Bell size={18}/>
       </div>
     </header>

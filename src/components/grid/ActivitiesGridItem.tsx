@@ -212,7 +212,7 @@ interface ActivitiesGridItemProps {
 
 const ActivitiesGridItem = forwardRef<HTMLDivElement, ActivitiesGridItemProps>(({ user, queryClient }, ref) => {
     const navigate = useNavigate()
-    const [isCompleted, setIsCompleted] = useState<boolean | undefined>(undefined)
+    const [isCompleted, setIsCompleted] = useState<boolean | undefined>(false)
     const [isOverdue, setIsOverdue] = useState<boolean | undefined>(undefined)
 
     // Dialog state
@@ -262,7 +262,7 @@ const ActivitiesGridItem = forwardRef<HTMLDivElement, ActivitiesGridItemProps>((
                             size="sm"
                             pressed={isCompleted === true}
                             onPressedChange={(pressed) => {
-                                setIsCompleted(pressed ? true : undefined)
+                                setIsCompleted(pressed ? true : false)
                             }}
                             aria-label="Toggle pending"
                             className='text-xs h-7'

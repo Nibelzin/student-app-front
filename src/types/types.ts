@@ -177,3 +177,25 @@ export type FocusSession = {
     subjectId?: string;
     activityId?: string;
 }
+
+export type AbsenceLog = {
+    id: string;
+    absenceDate: Date;
+    notes?: string;
+    createdAt: Date;
+    subjectId: string;
+    subjectName?: string;
+}
+
+export type Assessment = {
+    id: string;
+    title: string;
+    assessmentDate: Date;
+    grade?: number;
+    maxGrade?: number;
+    weight?: number;
+    createdAt: Date;
+    updatedAt: Date;
+    subjectId: string;
+    subjectName?: string;
+}

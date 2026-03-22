@@ -1,4 +1,4 @@
-import type { Subject, Material } from "@/types/types";
+import type { Subject, Material, Page, AbsenceLog, Assessment } from "@/types/types";
 import { apiRequest } from "./apiClient";
 
 export type CreateSubjectParams = {
@@ -17,8 +17,26 @@ export async function createSubject(params: CreateSubjectParams): Promise<Subjec
     });
 }
 
-export async function getSubjectMaterials(subjectId: string): Promise<Material[]> {
-    return apiRequest<Material[]>(`/subjects/${subjectId}/materials`, {
+export async function getSubjectMaterials(subjectId: string): Promise<Page<Material>> {
+    return apiRequest<Page<Material>>(`/subjects/${subjectId}/materials`, {
+        method: 'GET',
+    });
+}
+
+export async function getSubjectDetails(subjectId: string): Promise<Subject> {
+    return apiRequest<Subject>(`/subjects/${subjectId}`, {
+        method: 'GET',
+    });
+}
+
+export async function getSubjectAbsenceLogs(subjectId: string): Promise<Page<AbsenceLog>> {
+    return apiRequest<Page<AbsenceLog>>(`/absence-logs/subject/${subjectId}`, {
+        method: 'GET',
+    });
+}
+
+export async function getSubjectAssessments(subjectId: string): Promise<Page<Assessment>> {
+    return apiRequest<Page<Assessment>>(`/assessments/subject/${subjectId}`, {
         method: 'GET',
     });
 }
