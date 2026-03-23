@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Textarea } from '@/components/ui/textarea';
 import { useCurrentUser } from '@/hooks/use-user';
 import { cn } from '@/lib/utils';
-import type { Material } from '@/types/types';
+import type { Material, Page } from '@/types/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -96,14 +96,14 @@ const AddActivity = () => {
         queryKey: ['subjectMaterials', selectedSubjectId],
         queryFn: async () => {
             const res = await getSubjectMaterials(selectedSubjectId);
-            const list = Array.isArray(res) ? res : (res as any).content || [];
-            return list as Material[];
+            const list = Array.isArray(res) ? res.content : (res as any).content || [];
+            return list as Page<Material>;
         },
         enabled: !!selectedSubjectId
     });
 
     // Filter materials that are NOT attached to any activity
-    const availableSubjectMaterials = subjectMaterials?.filter(m => !m.activityId) || [];
+    const availableSubjectMaterials = subjectMaterials?.content?.filter(m => !m.activityId) || [];
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {

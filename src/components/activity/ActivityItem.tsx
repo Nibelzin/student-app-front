@@ -1,22 +1,20 @@
-import { getActivities, updateActivity, deleteActivity, getMaterialsByActivity } from '@/api/activitiyService'
-import { GripVertical, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, ClockIcon, Plus, ExternalLink, Pencil, Trash2, Loader2, LinkIcon, FileIcon, CalendarIcon, Paperclip, X } from 'lucide-react'
-import React, { forwardRef, useState } from 'react'
+import React, { useState } from 'react'
 import { Card } from '../ui/card'
-import type { User, Activity, Material, CheckListItem } from '@/types/types'
-import { useQuery, useMutation, useQueryClient, QueryClient } from '@tanstack/react-query'
-import { Toggle } from '../ui/toggle'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, ClockIcon, FileIcon, LinkIcon, Loader2, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '../ui/button'
 import confetti from 'canvas-confetti'
 import { useNavigate } from 'react-router'
-import AddActivityPopup from '../activity/AddActivityPopup'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { deleteActivity, getMaterialsByActivity, updateActivity } from '@/api/activitiyService'
+import type { CheckListItem, Activity, Material } from '@/types/types'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 interface ActivityItemProps {
     activity: Activity
 }
 
-export const ActivityItem = ({ activity }: ActivityItemProps) => {
+const ActivityItem = ({ activity }: ActivityItemProps) => {
     const [showDetails, setShowDetails] = useState(false)
     const navigate = useNavigate()
     const queryClient = useQueryClient()
@@ -204,99 +202,4 @@ export const ActivityItem = ({ activity }: ActivityItemProps) => {
     )
 }
 
-
-interface ActivitiesGridItemProps {
-    user: User | undefined
-    queryClient: QueryClient
-}
-
-const ActivitiesGridItem = forwardRef<HTMLDivElement, ActivitiesGridItemProps>(({ user, queryClient }, ref) => {
-    const navigate = useNavigate()
-    const [isCompleted, setIsCompleted] = useState<boolean | undefined>(false)
-    const [isOverdue, setIsOverdue] = useState<boolean | undefined>(undefined)
-
-    // Dialog state
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-
-    const { data: activitiesPage } = useQuery({
-        queryKey: ['activities', user?.id, isCompleted, isOverdue],
-        queryFn: () => getActivities({
-            userId: user?.id,
-            isCompleted: isCompleted,
-            isOverdue: isOverdue,
-            size: 5
-        }),
-        enabled: !!user?.id
-    })
-
-    const activities = activitiesPage?.content || []
-
-    return (
-        <>
-            <AddActivityPopup
-                isOpen={isDialogOpen}
-                onClose={() => setIsDialogOpen(false)}
-                user={user}
-            />
-            <div className='grid-stack-item' gs-id="activities" gs-w="4" gs-min-w="2" gs-max-h="6" gs-h="4" ref={ref}>
-                <div className='grid-stack-item-content bg-background rounded-sm shadow-none border flex flex-col'>
-                    <div className='flex items-center justify-between gap-2 border-accent p-3 mb-2'>
-                        <div className='flex items-center gap-2'>
-                            <GripVertical size={20} className='handle cursor-pointer text-neutral-400' />
-                            <h2 className="text-sm font-semibold uppercase tracking-wide">Próximas atividades</h2>
-                        </div>
-                        <div className='flex gap-2 items-center'>
-                            <div className='flex gap-4'>
-                                <Plus
-                                    className='cursor-pointer hover:text-blue-500 transition-colors'
-                                    size={20}
-                                    onClick={() => setIsDialogOpen(true)}
-                                />
-                                <ExternalLink className='cursor-pointer hover:text-blue-500 transition-colors' size={20} onClick={() => navigate('/activities')} />
-                            </div>
-                        </div>
-                    </div>
-                    <div className='flex gap-2 px-3 mb-2'>
-                        <Toggle
-                            size="sm"
-                            pressed={isCompleted === true}
-                            onPressedChange={(pressed) => {
-                                setIsCompleted(pressed ? true : false)
-                            }}
-                            aria-label="Toggle pending"
-                            className='text-xs h-7'
-                        >
-                            <CheckCircle2 size={14} className="mr-1" /> Concluidas
-                        </Toggle>
-                        <Toggle
-                            size="sm"
-                            pressed={isOverdue === true}
-                            onPressedChange={(pressed) => setIsOverdue(pressed ? true : undefined)}
-                            aria-label="Toggle overdue"
-                            className='text-xs h-7'
-                        >
-                            <AlertCircle size={14} className="mr-1" /> Atrasadas
-                        </Toggle>
-                    </div>
-                    <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar px-3">
-                        {activities.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-full text-neutral-500 py-8">
-                                <CheckCircle2 size={32} className="mb-2 opacity-20" />
-                                <p className="text-sm">Tudo certo por aqui 😃</p>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col gap-2 pb-2">
-                                {activities.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).map(activity => (
-                                    <ActivityItem key={activity.id} activity={activity} />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </>
-    )
-})
-
-export default ActivitiesGridItem
+export default ActivityItem

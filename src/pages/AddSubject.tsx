@@ -1,8 +1,9 @@
-import { createSubject } from '@/api/subjectService';
+import { createSubject, updateSubject, deleteSubject, getSubjectDetails } from '@/api/subjectService';
 import { getUserPeriods } from '@/api/userService';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState, useEffect } from 'react';
 import {
     Form,
     FormControl,
@@ -15,9 +16,9 @@ import { Input } from '@/components/ui/input';
 import { useCurrentUser } from '@/hooks/use-user';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { z } from 'zod';
 
 const formSchema = z.object({
@@ -26,12 +27,20 @@ const formSchema = z.object({
     professor: z.string().optional(),
     classroom: z.string().optional(),
     color: z.string().min(1, 'A cor é obrigatória'),
+    maxAbsencesAllowed: z.coerce.number().min(0, 'Deve ser 0 ou mais'),
 });
 
 const AddSubject = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const editId = searchParams.get('edit');
+    const isEditMode = !!editId;
+
     const { data: user } = useCurrentUser();
     const queryClient = useQueryClient();
+
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const { data: periods, isLoading: isPeriodsLoading } = useQuery({
         queryKey: ['periods', user?.id],
@@ -39,7 +48,11 @@ const AddSubject = () => {
         enabled: !!user?.id,
     });
 
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const { data: subjectToEdit } = useQuery({
+        queryKey: ['subjectDetails', editId],
+        queryFn: () => getSubjectDetails(editId!),
+        enabled: isEditMode,
+    });
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -48,41 +61,88 @@ const AddSubject = () => {
             periodId: '',
             professor: '',
             classroom: '',
-            color: '#3b82f6', // Default blue
+            color: '#3b82f6',
+            maxAbsencesAllowed: 0,
         },
     });
 
-    const { mutate: createSubjectMutate, isPending } = useMutation({
+    useEffect(() => {
+        if (subjectToEdit) {
+            form.reset({
+                name: subjectToEdit.name,
+                periodId: subjectToEdit.periodId,
+                professor: subjectToEdit.professor ?? '',
+                classroom: subjectToEdit.classroom ?? '',
+                color: subjectToEdit.color,
+                maxAbsencesAllowed: subjectToEdit.maxAbsencesAllowed,
+            });
+        }
+    }, [subjectToEdit, form]);
+
+    const { mutate: createSubjectMutate, isPending: isCreating } = useMutation({
         mutationFn: createSubject,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['userSubjects'] });
             navigate('/subjects');
         },
         onError: (error) => {
-            if (error instanceof Error) {
-                setErrorMessage(error.message)
-            } else {
-                setErrorMessage("An error occurred")
-            }
-        }
+            setErrorMessage(error instanceof Error ? error.message : 'Ocorreu um erro');
+        },
     });
+
+    const { mutate: updateSubjectMutate, isPending: isUpdating } = useMutation({
+        mutationFn: (values: z.infer<typeof formSchema>) => updateSubject(editId!, values),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userSubjects'] });
+            queryClient.invalidateQueries({ queryKey: ['subjectDetails', editId] });
+            navigate('/subjects');
+        },
+        onError: (error) => {
+            setErrorMessage(error instanceof Error ? error.message : 'Ocorreu um erro');
+        },
+    });
+
+    const { mutate: deleteSubjectMutate, isPending: isDeleting } = useMutation({
+        mutationFn: () => deleteSubject(editId!),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userSubjects'] });
+            navigate('/subjects');
+        },
+        onError: (error) => {
+            setErrorMessage(error instanceof Error ? error.message : 'Ocorreu um erro');
+        },
+    });
+
+    const isPending = isCreating || isUpdating;
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         if (!user?.id) return;
-
-        createSubjectMutate({
-            userId: user.id,
-            ...values,
-        });
+        if (isEditMode) {
+            updateSubjectMutate(values);
+        } else {
+            createSubjectMutate({ userId: user.id, ...values });
+        }
     }
 
     return (
         <main className="mx-auto w-full max-w-screen-2xl p-8 mb-16 sm:p-6 md:p-12 lg:px-12 xl:px-24 2xl:px-32">
-            <header className="flex gap-4 my-4 mb-8 items-center">
-                <Button variant="outline" className='shadow-none' size="icon" onClick={() => navigate('/subjects')}>
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <h1 className="text-2xl font-semibold">Adicionar Matéria</h1>
+            <header className="flex gap-4 my-4 mb-8 items-center justify-between">
+                <div className="flex gap-4 items-center">
+                    <Button variant="outline" className='shadow-none' size="icon" onClick={() => navigate('/subjects')}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <h1 className="text-2xl font-semibold">{isEditMode ? 'Editar Matéria' : 'Adicionar Matéria'}</h1>
+                </div>
+                {isEditMode && (
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        className="gap-1.5"
+                        onClick={() => setDeleteDialogOpen(true)}
+                    >
+                        <Trash2 className="h-4 w-4" /> Excluir Matéria
+                    </Button>
+                )}
             </header>
 
             <Card className="max-w-full mx-auto p-4 shadow-none">
@@ -161,6 +221,20 @@ const AddSubject = () => {
 
                         <FormField
                             control={form.control}
+                            name="maxAbsencesAllowed"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Máximo de Faltas Permitidas</FormLabel>
+                                    <FormControl>
+                                        <Input type="number" min={0} placeholder="Ex: 8" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
                             name="color"
                             render={({ field }) => (
                                 <FormItem>
@@ -181,10 +255,9 @@ const AddSubject = () => {
                         />
 
                         {errorMessage && (
-                            <p className="text-sm text-red-600 text-center">
-                                {errorMessage}
-                            </p>
+                            <p className="text-sm text-red-600 text-center">{errorMessage}</p>
                         )}
+
                         <div className="flex justify-end gap-2 pt-4">
                             <Button type="button" variant="outline" onClick={() => navigate('/subjects')}>
                                 Cancelar
@@ -198,6 +271,24 @@ const AddSubject = () => {
                     </form>
                 </Form>
             </Card>
+
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Excluir Matéria</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-muted-foreground">
+                        Tem certeza que deseja excluir <strong>{subjectToEdit?.name}</strong>? Esta ação não pode ser desfeita.
+                    </p>
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
+                        <Button variant="destructive" onClick={() => deleteSubjectMutate()} disabled={isDeleting}>
+                            {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Excluir
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </main>
     );
 };

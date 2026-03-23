@@ -6,7 +6,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
-import { ActivityItem } from '@/components/grid/ActivitiesGridItem'; // I might need to export ActivityItem from ActivitiesGridItem or duplicate it. 
+import ActivityItem from '@/components/activity/ActivityItem';
+// I might need to export ActivityItem from ActivitiesGridItem or duplicate it. 
 // It wasn't exported in the previous view, so I'll need to export it or copy it.
 // Checking previous view of ActivitiesGridItem: line 19 "const ActivityItem = ..." - not exported.
 // I will start by modifying ActivitiesGridItem to export ActivityItem so I can reuse it.

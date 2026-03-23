@@ -1,6 +1,6 @@
 import { getActivities, getMaterialsByActivity } from '@/api/activitiyService';
 import { getSubjectMaterials } from '@/api/subjectService';
-import type { Activity, Material, Subject } from '@/types/types';
+import type { Activity, Material, Page, Subject } from '@/types/types';
 import { useQuery } from '@tanstack/react-query';
 import {
     ChevronDown,
@@ -101,8 +101,8 @@ export const SubjectFolder = ({ subject, userId }: { subject: Subject; userId: s
         queryFn: async () => {
             const result = await getSubjectMaterials(subject.id);
             // Handle both pagination (Page<Material>) and list (Material[])
-            const list = Array.isArray(result) ? result : (result as any).content || [];
-            return list as Material[];
+            const list = Array.isArray(result) ? result.content : (result as any).content || [];
+            return list as Page<Material>;
         },
         enabled: isOpen,
     });
@@ -127,14 +127,14 @@ export const SubjectFolder = ({ subject, userId }: { subject: Subject; userId: s
                         </div>
                     ) : (
                         <>
-                            {(activities?.length === 0 && materials?.length === 0) && (
+                            {(activities?.length === 0 && materials?.content?.length === 0) && (
                                 <div className="py-1 px-6 text-xs text-gray-400 italic">Vazio</div>
                             )}
                             {/* Materials first? Or Activities? Usually folders first. */}
                             {activities?.map(activity => (
                                 <ActivityFolder key={activity.id} activity={activity} />
                             ))}
-                            {materials?.map(material => (
+                            {materials?.content?.map(material => (
                                 (!material.activityId) && <FileItem key={material.id} material={material} />
                             ))}
                         </>

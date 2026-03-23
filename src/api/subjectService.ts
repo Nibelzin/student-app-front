@@ -8,6 +8,7 @@ export type CreateSubjectParams = {
     professor?: string;
     classroom?: string;
     color: string;
+    maxAbsencesAllowed: number;
 };
 
 export async function createSubject(params: CreateSubjectParams): Promise<Subject> {
@@ -37,6 +38,25 @@ export async function getSubjectAbsenceLogs(subjectId: string): Promise<Page<Abs
 
 export async function getSubjectAssessments(subjectId: string): Promise<Page<Assessment>> {
     return apiRequest<Page<Assessment>>(`/assessments/subject/${subjectId}`, {
+        method: 'GET',
+    });
+}
+
+export async function updateSubject(id: string, params: Partial<CreateSubjectParams>): Promise<Subject> {
+    return apiRequest<Subject>(`/subjects/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(params),
+    });
+}
+
+export async function deleteSubject(id: string): Promise<void> {
+    return apiRequest<void>(`/subjects/${id}`, {
+        method: 'DELETE',
+    });
+}
+
+export async function getUserAssessments(userId: string): Promise<Page<Assessment>> {
+    return apiRequest<Page<Assessment>>(`/assessments?userId=${userId}`, {
         method: 'GET',
     });
 }

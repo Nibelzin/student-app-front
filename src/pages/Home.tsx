@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { generateText } from '@/api/aiService'
 import NotesGridItem from '@/components/grid/NotesGridItem'
 import HomeGrid from '@/components/grid/HomeGrid'
-import ActivitiesGridItem from '@/components/grid/ActivitiesGridItem'
+import ActivitiesGridItem from '@/components/grid/LearningGridItem'
 import FilesGridItem from '@/components/grid/FilesGridItem'
 import coverImage from '../assets/fundo-espaco.jpg'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,6 +22,7 @@ const Home = () => {
     const filesRef = useRef<HTMLDivElement>(null);
     const activitiesRef = useRef<HTMLDivElement>(null);
     const focusTimerRef = useRef<HTMLDivElement>(null);
+    const assessmentsRef = useRef<HTMLDivElement>(null);
 
     const xpToNextLevel = user?.currentLevel! * 100;
     const currentLevelProgressPercentage = Math.min(user?.currentXp!, xpToNextLevel) / xpToNextLevel * 100;
