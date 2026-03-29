@@ -69,10 +69,10 @@ const NotesGridItem = forwardRef<HTMLDivElement, NotesGridItemProps>(({ user, qu
 
   return (
     <div className='grid-stack-item' gs-id="notes" gs-w="2" gs-h="4" ref={ref}>
-      <div className='grid-stack-item-content rounded-sm border bg-background'>
+      <div className='grid-stack-item-content flex flex-col rounded-sm border bg-background p-3'>
         <div className=' h-[calc(100%-96px)] overflow'>
           <div className='flex flex-col gap-2'>
-            <div className='flex items-center justify-between gap-2 border-b border-accent p-3'>
+            <div className='flex items-center justify-between gap-2 border-accent'>
               <div className='flex items-center gap-2'>
                 <GripVertical size={20} className='handle cursor-pointer' />
                 <h2 className="text-sm font-semibold uppercase tracking-wide">Notas</h2>
@@ -82,11 +82,11 @@ const NotesGridItem = forwardRef<HTMLDivElement, NotesGridItemProps>(({ user, qu
                 <ExternalLink className='cursor-pointer hover:text-blue-500 transition-colors' size={20} onClick={() => navigate('/notes')} />
               </div>
             </div>
-            <div className='px-3'>
+            <div className='mb-2'>
               <Input placeholder='Pesquisar Notas...' className='shadow-none' value={noteSearch} onChange={(e) => setNoteSearch(e.target.value)} />
             </div>
           </div>
-          <div className='px-3 py-2 h-full overflow-y-auto'>
+          <div className='h-full overflow-y-auto'>
             {filteredNotes?.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-neutral-500 py-8">
                 <NotepadText size={32} className="mb-2 opacity-20" />

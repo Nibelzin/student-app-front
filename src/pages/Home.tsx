@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { generateText } from '@/api/aiService'
 import NotesGridItem from '@/components/grid/NotesGridItem'
 import HomeGrid from '@/components/grid/HomeGrid'
-import ActivitiesGridItem from '@/components/grid/LearningGridItem'
+import LearningGridItem from '@/components/grid/LearningGridItem'
 import FilesGridItem from '@/components/grid/FilesGridItem'
 import coverImage from '../assets/fundo-espaco.jpg'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -74,7 +74,7 @@ const Home = () => {
                         </CardContent>
                     </Card>
                     <HomeGrid userPreferences={userPreferences} isLoading={isPreferencesLoading || isUserLoading}>
-                        <ActivitiesGridItem user={user} queryClient={queryClient} ref={activitiesRef} />
+                        <LearningGridItem user={user} queryClient={queryClient} ref={activitiesRef} />
                         <NotesGridItem user={user} queryClient={queryClient} ref={notesRef} />
                         <FilesGridItem user={user} queryClient={queryClient} ref={filesRef} />
                         <FocusTimerGridItem ref={focusTimerRef} />

@@ -36,9 +36,3 @@ export async function updateAssessment(params: UpdateAssessmentParams): Promise<
         }
     );
 }
-
-export async function getUserAssessments(userId: string): Promise<Page<Assessment>> {
-    return apiRequest<Page<Assessment>>(`/assessments?userId=${userId}`, {
-        method: 'GET',
-    });
-}

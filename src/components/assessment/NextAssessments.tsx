@@ -1,17 +1,18 @@
-import { AlertCircle, CheckCircle2 } from 'lucide-react'
-import { Toggle } from '../ui/toggle'
-import { useNavigate } from 'react-router'
-import { useState } from 'react'
+import { getUserAssessments } from '@/api/userService'
+import type { User } from '@/types/types'
 import { useQuery } from '@tanstack/react-query'
-import { getActivities } from '@/api/activitiyService'
-import type { Activity, Page, User } from '@/types/types'
-import ActivityItem from './ActivityItem'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { Toggle } from '../ui/toggle'
+import { AlertCircle, CheckCircle2 } from 'lucide-react'
+import AssessmentItem from './AssessmentItem'
 
 interface NextActivitiesProps {
     user: User | undefined
 }
 
-const NextActivities = ({ user }: NextActivitiesProps) => {
+
+const NextAssessments = ({ user }: NextActivitiesProps) => {
     const navigate = useNavigate()
     const [isCompleted, setIsCompleted] = useState<boolean | undefined>(false)
     const [isOverdue, setIsOverdue] = useState<boolean | undefined>(undefined)
@@ -19,21 +20,16 @@ const NextActivities = ({ user }: NextActivitiesProps) => {
     // Dialog state
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-    const { data: activitiesPage } = useQuery({
-        queryKey: ['activities', user?.id, isCompleted, isOverdue],
-        queryFn: () => getActivities({
-            userId: user?.id,
-            isCompleted: isCompleted,
-            isOverdue: isOverdue,
-            size: 5
-        }),
+    const { data: assessmentsPage } = useQuery({
+        queryKey: ['assessments', user?.id, isCompleted, isOverdue],
+        queryFn: () => getUserAssessments(user?.id!),
         enabled: !!user?.id
     })
 
-    const activities = activitiesPage?.content || []
+    const assessments = assessmentsPage?.content || []
 
     return (
-        <div className='flex h-full flex-col'>
+        <>
             <div className='flex gap-2 mb-2'>
                 <Toggle
                     size="sm"
@@ -57,21 +53,22 @@ const NextActivities = ({ user }: NextActivitiesProps) => {
                 </Toggle>
             </div>
             <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
-                {activities.length === 0 ? (
+                {assessments.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-neutral-500 py-8">
                         <CheckCircle2 size={32} className="mb-2 opacity-20" />
                         <p className="text-sm">Tudo certo por aqui 😃</p>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-2 pb-2">
-                        {activities.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).map(activity => (
-                            <ActivityItem key={activity.id} activity={activity} />
+                        {assessments.map((assessment) => (
+                            <AssessmentItem key={assessment.id} assessment={assessment} />
                         ))}
+
                     </div>
                 )}
             </div>
-        </div>
+        </>
     )
 }
 
-export default NextActivities
+export default NextAssessments

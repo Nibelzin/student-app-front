@@ -31,8 +31,8 @@ const FilesGridItem = forwardRef<HTMLDivElement, FilesGridItemProps>(({ user, qu
 
     return (
         <div className='grid-stack-item' gs-id="files" gs-w="6" gs-h="8" ref={ref}>
-            <div className='grid-stack-item-content bg-background flex flex-col border rounded-sm overflow-hidden'>
-                <div className='flex items-center justify-between mb-0 p-3 gap-2'>
+            <div className='grid-stack-item-content bg-background flex flex-col border rounded-sm overflow-hidden p-3 gap-4'>
+                <div className='flex items-center justify-between mb-0 gap-2'>
                     <div className='flex items-center gap-2'>
                         <GripVertical size={20} className='handle cursor-pointer' />
                         <h2 className="text-sm font-semibold uppercase tracking-wide">Arquivos</h2>
@@ -45,7 +45,7 @@ const FilesGridItem = forwardRef<HTMLDivElement, FilesGridItemProps>(({ user, qu
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent">
+                <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent">
                     {isLoading ? (
                         <div className="flex items-center justify-center h-full text-neutral-400">
                             <Loader2 className="animate-spin mr-2" /> Carregando...

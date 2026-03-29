@@ -1,4 +1,4 @@
-import type { Note, Page, Period, Subject, User, UserPreferences, PageParams, Activity } from "@/types/types";
+import type { Note, Page, Period, Subject, User, UserPreferences, PageParams, Activity, Assessment } from "@/types/types";
 import { apiRequest } from "./apiClient";
 import { buildQueryString, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/lib/utils";
 
@@ -12,7 +12,6 @@ interface CreateUserParams {
 interface GetUserPreferencesParams {
     userId: string;
 }
-
 
 
 interface GetUserNotesParams extends PageParams {
@@ -88,5 +87,11 @@ export async function updateUserPreferences(id: string, preferences: Partial<Use
     return apiRequest<UserPreferences>(`/user-preferences/${id}`, {
         method: 'PUT',
         body: JSON.stringify(preferences),
+    });
+}
+
+export async function getUserAssessments(userId: string): Promise<Page<Assessment>> {
+    return apiRequest<Page<Assessment>>(`/users/${userId}/assessments`, {
+        method: 'GET',
     });
 }
