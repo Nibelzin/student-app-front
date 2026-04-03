@@ -1,5 +1,13 @@
-import type { Assessment, Page } from "@/types/types";
+import type { Assessment, Page, PageParams } from "@/types/types";
 import { apiRequest } from "./apiClient";
+import { buildQueryString } from "@/lib/utils";
+
+interface GetAssessmentsParams extends PageParams {
+    subjectId?: string;
+    userId?: string;
+    assessmentDate?: Date;
+    isCompleted?: boolean;
+}
 
 interface CreateAssessmentParams {
     title: string;
@@ -33,6 +41,18 @@ export async function updateAssessment(params: UpdateAssessmentParams): Promise<
         {
             method: 'PUT',
             body: JSON.stringify(params)
+        }
+    );
+}
+
+export async function getAssessments(params: GetAssessmentsParams): Promise<Page<Assessment>> {
+    const query = buildQueryString({
+        ...params
+    })
+
+    return apiRequest<Page<Assessment>>(`/assessments?${query}`,
+        {
+            method: 'GET',
         }
     );
 }

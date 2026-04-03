@@ -31,6 +31,7 @@ const NextActivities = ({ user }: NextActivitiesProps) => {
     })
 
     const activities = activitiesPage?.content || []
+    const sortedActivities = activities.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
 
     return (
         <div className='flex h-full flex-col'>
@@ -56,7 +57,7 @@ const NextActivities = ({ user }: NextActivitiesProps) => {
                     <AlertCircle size={14} className="mr-1" /> Atrasadas
                 </Toggle>
             </div>
-            <div className="flex-1 overflow-y-auto min-h-0 custom-scrollbar">
+            <div className="h-full overflow-y-auto custom-scrollbar">
                 {activities.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-neutral-500 py-8">
                         <CheckCircle2 size={32} className="mb-2 opacity-20" />
@@ -64,7 +65,7 @@ const NextActivities = ({ user }: NextActivitiesProps) => {
                     </div>
                 ) : (
                     <div className="flex flex-col gap-2 pb-2">
-                        {activities.sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).map(activity => (
+                        {sortedActivities.map(activity => (
                             <ActivityItem key={activity.id} activity={activity} />
                         ))}
                     </div>

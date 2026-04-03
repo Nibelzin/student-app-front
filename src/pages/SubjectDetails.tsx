@@ -10,7 +10,7 @@ import {
 import { getSubjectDetails, getSubjectAbsenceLogs, getSubjectAssessments, getSubjectMaterials } from '@/api/subjectService'
 import { getActivities, updateActivity } from '@/api/activitiyService'
 import { createAbsenceLog } from '@/api/absenceLogService'
-import { createAssessment, updateAssessment } from '@/api/assessmentService'
+import { createAssessment, getAssessments, updateAssessment } from '@/api/assessmentService'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -188,7 +188,7 @@ const SubjectDetails = () => {
 
   const { data: assessments, isPending: isAssessmentsLoading } = useQuery({
     queryKey: ['subjectAssessments', subjectId],
-    queryFn: () => getSubjectAssessments(subjectId!),
+    queryFn: () => getAssessments({ subjectId: subjectId!, size: 20 }),
     enabled: !!subjectId,
   })
 

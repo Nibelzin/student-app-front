@@ -24,10 +24,13 @@ const AssessmentItem = ({ assessment }: { assessment: Assessment }) => {
     })
 
     return (
-        <Card className="shadow-none rounded-sm">
-            <CardContent className="py-3 px-4 flex items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                    <p className="font-medium text-sm">{assessment.title}</p>
+        <Card className="shadow-none rounded-sm py-0">
+            <CardContent className="py-3 px-4 h-full flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1 flex flex-col justify-between h-full gap-4">
+                    <div>
+                        <p className="font-medium text-sm">{assessment.title}</p>
+                        <p className="text-xs text-neutral-500">{assessment.subjectName}</p>
+                    </div>
                     <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                         <Calendar className="size-3" />
                         {format(new Date(assessment.assessmentDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
@@ -57,13 +60,14 @@ const AssessmentItem = ({ assessment }: { assessment: Assessment }) => {
                         </>
                     ) : (
                         <>
-                            <span className="text-xs text-muted-foreground">
-                                {isFuture(new Date(assessment.assessmentDate)) ? 'Agendada' : 'Sem nota'}
-                            </span>
-                            {!isFuture(new Date(assessment.assessmentDate)) && (
+                            {!isFuture(new Date(assessment.assessmentDate)) ? (
                                 <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setIsGrading(true)}>
                                     Lançar nota
                                 </Button>
+                            ) : (
+                                <span className="text-xs text-muted-foreground">
+                                    {isFuture(new Date(assessment.assessmentDate)) ? 'Agendada' : 'Sem nota'}
+                                </span>
                             )}
                         </>
                     )}

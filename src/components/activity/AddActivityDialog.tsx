@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { cn } from '@/lib/utils'
 import { ptBR } from 'date-fns/locale'
 import type { User } from '@/types/types'
-    
+
 const formSchema = z.object({
     title: z.string().min(1, 'O título é obrigatório'),
     description: z.string().optional(),
@@ -29,13 +29,13 @@ const formSchema = z.object({
     checkList: z.array(z.object({ description: z.string().min(1, 'Obrigatório'), isDone: z.boolean() })).optional()
 })
 
-interface AddActivityPopupProps {
+interface AddActivityDialogProps {
     isOpen: boolean
     onClose: () => void
     user?: User
 }
 
-function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
+function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
 
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isLinkPopoverOpen, setIsLinkPopoverOpen] = useState(false)
@@ -133,16 +133,6 @@ function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
 
         try {
 
-            const activityData = {
-                title: values.title,
-                description: values.description,
-                dueDate: values.dueDate,
-                type: values.type,
-                subjectId: values.subjectId,
-                checkList: values.checkList?.filter(c => c.description.trim() !== '') || []
-            }
-
-            console.log("NEW ACTIVITY: ", activityData)
 
             const newActivity = await createActivityMutate({
                 title: values.title,
@@ -197,13 +187,12 @@ function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
                                 </FormItem>
                             )}
                         />
-
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="flex justify-between items-start gap-4">
                             <FormField
                                 control={form.control}
                                 name="subjectId"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className='w-full'>
                                         <FormLabel>Matéria</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
@@ -212,7 +201,7 @@ function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Selecione uma matéria" />
+                                                    <SelectValue placeholder="Selecione uma matéria"/>
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
@@ -232,7 +221,7 @@ function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
                                 control={form.control}
                                 name="dueDate"
                                 render={({ field }) => (
-                                    <FormItem className="flex flex-col flex-1 w-full justify-end">
+                                    <FormItem className='w-full'>
                                         <FormLabel>Data de Entrega</FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
@@ -432,4 +421,4 @@ function AddActivityPopup({ isOpen, onClose, user }: AddActivityPopupProps) {
     )
 }
 
-export default AddActivityPopup
+export default AddActivityDialog
