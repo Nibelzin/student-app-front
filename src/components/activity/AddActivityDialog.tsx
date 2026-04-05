@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
@@ -13,12 +13,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createMaterial, createMaterialWithFile } from '@/api/materialService'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createActivity } from '@/api/activitiyService'
+import { createActivity, updateActivity } from '@/api/activitiyService'
 import { getUserSubjects } from '@/api/userService'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { cn } from '@/lib/utils'
 import { ptBR } from 'date-fns/locale'
-import type { User } from '@/types/types'
+import type { Activity, User } from '@/types/types'
 
 const formSchema = z.object({
     title: z.string().min(1, 'O título é obrigatório'),
@@ -33,10 +33,12 @@ interface AddActivityDialogProps {
     isOpen: boolean
     onClose: () => void
     user?: User
+    activity?: Activity
 }
 
-function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
+function AddActivityDialog({ isOpen, onClose, user, activity }: AddActivityDialogProps) {
 
+    const isEditMode = !!activity
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isLinkPopoverOpen, setIsLinkPopoverOpen] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -59,6 +61,30 @@ function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
             checkList: []
         },
     })
+
+    useEffect(() => {
+        if (activity) {
+            form.reset({
+                title: activity.title,
+                description: activity.description || '',
+                dueDate: new Date(activity.dueDate),
+                type: activity.type || '',
+                subjectId: activity.subjectId,
+                checkList: activity.checklist || []
+            })
+        } else {
+            form.reset({
+                title: '',
+                description: '',
+                dueDate: new Date(),
+                type: '',
+                subjectId: '',
+                checkList: []
+            })
+            setPendingFiles([])
+            setPendingLinks([])
+        }
+    }, [activity, form])
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -85,6 +111,13 @@ function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
 
     const { mutateAsync: createActivityMutate } = useMutation({
         mutationFn: createActivity,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['activities'] })
+        }
+    })
+
+    const { mutateAsync: updateActivityMutate } = useMutation({
+        mutationFn: updateActivity,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['activities'] })
         }
@@ -132,20 +165,31 @@ function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
         }
 
         try {
+            if (isEditMode) {
+                await updateActivityMutate({
+                    id: activity.id,
+                    title: values.title,
+                    description: values.description,
+                    dueDate: values.dueDate,
+                    checklist: values.checkList?.filter(c => c.description.trim() !== '') || []
+                })
 
+                if (pendingFiles.length > 0 || pendingLinks.length > 0) {
+                    await handleAttachments(activity.id, activity.subjectId)
+                }
+            } else {
+                const newActivity = await createActivityMutate({
+                    title: values.title,
+                    description: values.description,
+                    dueDate: values.dueDate,
+                    type: values.type,
+                    subjectId: values.subjectId,
+                    checklist: values.checkList?.filter(c => c.description.trim() !== '') || []
+                })
 
-            const newActivity = await createActivityMutate({
-                title: values.title,
-                description: values.description,
-                dueDate: values.dueDate,
-                type: values.type,
-                subjectId: values.subjectId,
-                checklist: values.checkList?.filter(c => c.description.trim() !== '') || []
-            })
+                await handleAttachments(newActivity.id, values.subjectId)
+            }
 
-            await handleAttachments(newActivity.id, values.subjectId)
-
-            // reset entire state
             form.reset()
             setPendingFiles([])
             setPendingLinks([])
@@ -169,7 +213,7 @@ function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" showCloseButton={false}>
                 <DialogHeader>
-                    <DialogTitle>Adicionar Atividade</DialogTitle>
+                    <DialogTitle>{isEditMode ? 'Editar Atividade' : 'Adicionar Atividade'}</DialogTitle>
                 </DialogHeader>
 
                 <Form {...form}>
@@ -197,7 +241,7 @@ function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
                                         <Select
                                             onValueChange={field.onChange}
                                             value={field.value}
-                                            disabled={isSubjectsLoading}
+                                            disabled={isSubjectsLoading || isEditMode}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -248,7 +292,7 @@ function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
                                                     selected={field.value}
                                                     onSelect={field.onChange}
                                                     disabled={(date) =>
-                                                        date < new Date(new Date().setHours(0, 0, 0, 0))
+                                                        !isEditMode && date < new Date(new Date().setHours(0, 0, 0, 0))
                                                     }
                                                     initialFocus
                                                 />
@@ -411,7 +455,7 @@ function AddActivityDialog({ isOpen, onClose, user }: AddActivityDialogProps) {
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Criar Atividade
+                                {isEditMode ? 'Salvar Alterações' : 'Criar Atividade'}
                             </Button>
                         </div>
                     </form>

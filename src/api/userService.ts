@@ -1,4 +1,4 @@
-import type { Note, Page, Period, Subject, User, UserPreferences, PageParams, Activity, Assessment } from "@/types/types";
+import type { Note, Page, Period, Subject, User, UserPreferences, PageParams, Activity, Assessment, PlannerEvent } from "@/types/types";
 import { apiRequest } from "./apiClient";
 import { buildQueryString, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/lib/utils";
 
@@ -93,5 +93,11 @@ export async function updateUserPreferences(id: string, preferences: Partial<Use
 export async function getUserAssessments(userId: string): Promise<Page<Assessment>> {
     return apiRequest<Page<Assessment>>(`/users/${userId}/assessments`, {
         method: 'GET',
+    });
+}
+
+export async function getUserPlannerEvents(userId: string): Promise<Page<PlannerEvent>> {
+    return apiRequest<Page<PlannerEvent>>(`/users/${userId}/planner-events`,{
+        method: 'GET'
     });
 }

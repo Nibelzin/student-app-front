@@ -53,7 +53,7 @@ const NextAssessments = ({ user }: NextActivitiesProps) => {
                 ) : (
                     <div className="flex flex-col gap-2 pb-2">
                         {sortedAssessments.map((assessment) => (
-                            <AssessmentItem key={assessment.id} assessment={assessment} />
+                            <AssessmentItem key={assessment.id} assessment={assessment} user={user} />
                         ))}
 
                     </div>

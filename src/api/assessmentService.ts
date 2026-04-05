@@ -45,6 +45,12 @@ export async function updateAssessment(params: UpdateAssessmentParams): Promise<
     );
 }
 
+export async function deleteAssessment(id: string): Promise<void> {
+    return apiRequest<void>(`/assessments/${id}`, {
+        method: 'DELETE'
+    });
+}
+
 export async function getAssessments(params: GetAssessmentsParams): Promise<Page<Assessment>> {
     const query = buildQueryString({
         ...params

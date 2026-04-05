@@ -199,3 +199,21 @@ export type Assessment = {
     subjectId: string;
     subjectName?: string;
 }
+
+export type PlannerEvent = {
+    id: string;
+    title: string;
+    startAt: Date;
+    endAt: Date;
+    allDay: boolean;
+    rule?: string;
+    color?: string;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+    userName?: string;
+    subjectId?: string;
+    subjectName?: string;
+    activityId?: string;
+    activityTitle?: string;
+}

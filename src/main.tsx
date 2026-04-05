@@ -16,6 +16,7 @@ import Files from './pages/Files.tsx'
 import NotesPage from './pages/NotesPage.tsx'
 import Activities from './pages/Activities.tsx'
 import Settings from './pages/Settings.tsx'
+import CalendarPage from './pages/CalendarPage.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from './components/theme-provider.tsx'
 import ProtectedRoute from './components/ProtectedRoute.tsx'
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <Settings />
+      },
+      {
+        path: "/calendar",
+        element: <CalendarPage />
       },
       {
         path: "/gamification",

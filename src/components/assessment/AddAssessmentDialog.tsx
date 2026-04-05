@@ -1,5 +1,5 @@
-import type { User } from '@/types/types'
-import React, { useState } from 'react'
+import type { Assessment, User } from '@/types/types'
+import { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
@@ -14,7 +14,7 @@ import { format } from 'date-fns'
 import { Calendar } from '../ui/calendar'
 import { ptBR } from 'date-fns/locale'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createAssessment } from '@/api/assessmentService'
+import { createAssessment, updateAssessment } from '@/api/assessmentService'
 import { getUserSubjects } from '@/api/userService'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
@@ -22,6 +22,7 @@ interface AddAssessmentDialogProps {
     isOpen: boolean
     onClose: () => void
     user?: User
+    assessment?: Assessment
 }
 
 const formSchema = z.object({
@@ -32,8 +33,9 @@ const formSchema = z.object({
     subjectId: z.string().min(1, 'A matéria é obrigatória')
 })
 
-const AddAssessmentDialog = ({ isOpen, onClose, user }: AddAssessmentDialogProps) => {
+const AddAssessmentDialog = ({ isOpen, onClose, user, assessment }: AddAssessmentDialogProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const isEditMode = !!assessment
 
     const queryClient = useQueryClient()
 
@@ -48,10 +50,39 @@ const AddAssessmentDialog = ({ isOpen, onClose, user }: AddAssessmentDialogProps
         }
     })
 
+    useEffect(() => {
+        if (assessment) {
+            form.reset({
+                title: assessment.title,
+                date: new Date(assessment.assessmentDate),
+                maxGrade: assessment.maxGrade,
+                weight: assessment.weight,
+                subjectId: assessment.subjectId,
+            })
+        } else {
+            form.reset({
+                title: '',
+                date: new Date(),
+                maxGrade: undefined,
+                weight: undefined,
+                subjectId: ''
+            })
+        }
+    }, [assessment, form])
+
     const { mutateAsync: createAssessmentMutate } = useMutation({
         mutationFn: createAssessment,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['assessments'] })
+            queryClient.invalidateQueries({ queryKey: ['userAssessments'] })
+        }
+    })
+
+    const { mutateAsync: updateAssessmentMutate } = useMutation({
+        mutationFn: updateAssessment,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['assessments'] })
+            queryClient.invalidateQueries({ queryKey: ['userAssessments'] })
         }
     })
 
@@ -65,18 +96,28 @@ const AddAssessmentDialog = ({ isOpen, onClose, user }: AddAssessmentDialogProps
         setIsSubmitting(true)
 
         try {
-            await createAssessmentMutate({
-                title: data.title,
-                assessmentDate: data.date,
-                maxGrade: data.maxGrade,
-                weight: data.weight,
-                subjectId: data.subjectId,
-            })
+            if (isEditMode) {
+                await updateAssessmentMutate({
+                    id: assessment.id,
+                    title: data.title,
+                    assessmentDate: data.date,
+                    maxGrade: data.maxGrade,
+                    weight: data.weight,
+                })
+            } else {
+                await createAssessmentMutate({
+                    title: data.title,
+                    assessmentDate: data.date,
+                    maxGrade: data.maxGrade,
+                    weight: data.weight,
+                    subjectId: data.subjectId,
+                })
+            }
 
             form.reset()
             onClose()
         } catch (error) {
-            console.error("Error creating assessment: ", error)
+            console.error("Error saving assessment: ", error)
         } finally {
             setIsSubmitting(false)
         }
@@ -86,7 +127,7 @@ const AddAssessmentDialog = ({ isOpen, onClose, user }: AddAssessmentDialogProps
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent showCloseButton={false} className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Nova Prova</DialogTitle>
+                    <DialogTitle>{isEditMode ? 'Editar Prova' : 'Nova Prova'}</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
@@ -118,7 +159,7 @@ const AddAssessmentDialog = ({ isOpen, onClose, user }: AddAssessmentDialogProps
                                         <Select
                                             onValueChange={field.onChange}
                                             value={field.value}
-                                            disabled={isSubjectsLoading}
+                                            disabled={isSubjectsLoading || isEditMode}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -168,7 +209,7 @@ const AddAssessmentDialog = ({ isOpen, onClose, user }: AddAssessmentDialogProps
                                                     selected={field.value}
                                                     onSelect={field.onChange}
                                                     disabled={(date) =>
-                                                        date < new Date(new Date().setHours(0, 0, 0, 0))
+                                                        !isEditMode && date < new Date(new Date().setHours(0, 0, 0, 0))
                                                     }
                                                     className='w-full'
                                                 />
@@ -223,7 +264,7 @@ const AddAssessmentDialog = ({ isOpen, onClose, user }: AddAssessmentDialogProps
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Adicionar Prova
+                                {isEditMode ? 'Salvar Alterações' : 'Adicionar Prova'}
                             </Button>
                         </div>
                     </form>
