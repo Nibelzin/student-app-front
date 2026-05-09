@@ -7,6 +7,7 @@ import { Outlet } from 'react-router'
 import { FocusSessionProvider } from '@/context/FocusSessionContext'
 import FocusSessionPopup from '@/components/focus-session/FocusSessionPopup'
 import FocusSessionMinimizedWidget from '@/components/focus-session/FocusSessionMinimizedWidget'
+import { CommandPalette } from '@/components/search/CommandPalette'
 
 const MainLayout = () => {
 
@@ -29,6 +30,7 @@ const MainLayout = () => {
         </div>
         <FocusSessionPopup />
         <FocusSessionMinimizedWidget />
+        <CommandPalette />
       </SidebarProvider>
     </FocusSessionProvider>
   )

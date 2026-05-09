@@ -60,9 +60,9 @@ export default function FocusSessionTimer() {
     })
 
     return (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 h-full">
             {/* Circular timer */}
-            <div className="flex justify-center">
+            <div className="flex justify-center max-h-52 items-center">
                 <div className="relative w-36 h-36 flex items-center justify-center">
                     <svg className="absolute inset-0 -rotate-90" viewBox="0 0 120 120">
                         <circle
@@ -89,6 +89,7 @@ export default function FocusSessionTimer() {
                 </div>
             </div>
 
+            <div className='h-full py-4'>
             {/* Attach activity (when none selected) */}
             {!selectedActivity && activities.length > 0 && (
                 <div className="flex flex-col gap-2">
@@ -172,6 +173,7 @@ export default function FocusSessionTimer() {
                     </Button>
                 </div>
             )}
+            </div>
 
             <Button
                 variant="ghost"

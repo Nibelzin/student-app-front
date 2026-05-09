@@ -52,18 +52,24 @@ function CalendarPage() {
         queryKey: ['activities', user?.id, 'calendar'],
         queryFn: () => getActivities({ userId: user?.id, size: 500 }),
         enabled: !!user?.id,
+        staleTime: 1000 * 60 * 5,
+        refetchOnWindowFocus: false,
     })
 
     const { data: assessmentsPage, isLoading: isLoadingAssessments } = useQuery({
         queryKey: ['userAssessments', user?.id, 'calendar'],
         queryFn: () => getUserAssessments(user!.id),
         enabled: !!user?.id,
+        staleTime: 1000 * 60 * 5,
+        refetchOnWindowFocus: false,
     })
 
     const { data: plannerEventsPage, isLoading: isLoadingPlannerEvents } = useQuery({
         queryKey: ['userPlannerEvents', user?.id],
         queryFn: () => getUserPlannerEvents(user!.id),
         enabled: !!user?.id,
+        staleTime: 1000 * 60 * 5,
+        refetchOnWindowFocus: false,
     })
 
     const isLoading = isLoadingActivities || isLoadingAssessments || isLoadingPlannerEvents

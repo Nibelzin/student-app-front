@@ -1,13 +1,34 @@
 import { GoogleGenAI } from "@google/genai"
+import { apiRequest } from "./apiClient";
+import type { CheckListItem } from "@/types/types";
 
 type GeneratedText = {
     originalText?: string
     generatedContent: unknown
 }
 
+interface GenerateChecklistParams {
+    activityTitle: string;
+    subjectName: string;
+    activityDescription?: string;
+}
+
 const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY
 
 const ai = new GoogleGenAI({ apiKey: geminiApiKey })
+
+export async function generateChecklist(params: GenerateChecklistParams): Promise<CheckListItem[]> {
+    if (!params.activityTitle || !params.activityTitle.trim()) {
+        throw new Error('O título da atividade não pode ser vazio para gerar o checklist')
+    }
+
+    const response = await apiRequest<{ items: CheckListItem[] }>(`/ai/generate-checklist`, {
+        method: 'POST',
+        body: JSON.stringify(params)
+    });
+
+    return response.items;
+}
 
 export async function generateText(prompt?: string): Promise<GeneratedText> {
     if (!prompt || !prompt.trim()) {

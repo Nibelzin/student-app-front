@@ -5,7 +5,7 @@ import { Input } from '../ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Button } from '../ui/button'
 import { format } from 'date-fns'
-import { CalendarIcon, FileIcon, LinkIcon, Loader2, Paperclip, Plus, X } from 'lucide-react'
+import { CalendarIcon, FileIcon, LinkIcon, Loader2, Paperclip, Plus, SparkleIcon, Sparkles, X } from 'lucide-react'
 import { Calendar } from '../ui/calendar'
 import { Textarea } from '../ui/textarea'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { cn } from '@/lib/utils'
 import { ptBR } from 'date-fns/locale'
 import type { Activity, User } from '@/types/types'
+import { generateChecklist } from '@/api/aiService'
 
 const formSchema = z.object({
     title: z.string().min(1, 'O título é obrigatório'),
@@ -40,6 +41,7 @@ function AddActivityDialog({ isOpen, onClose, user, activity }: AddActivityDialo
 
     const isEditMode = !!activity
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isChecklistGenerating, setIsChecklistGenerating] = useState(false)
     const [isLinkPopoverOpen, setIsLinkPopoverOpen] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [pendingFiles, setPendingFiles] = useState<File[]>([])
@@ -98,6 +100,32 @@ function AddActivityDialog({ isOpen, onClose, user, activity }: AddActivityDialo
             setNewLinkTitle('')
             setNewLinkUrl('')
             setIsLinkPopoverOpen(false)
+        }
+    }
+
+    const handleGenerateChecklist = async () => {
+        setIsChecklistGenerating(true)
+
+        if (form.getValues('title')) {
+            try {
+                const generatedItems = await generateChecklist({
+                    activityTitle: form.getValues('title'),
+                    subjectName: subjectsPage?.content.find(s => s.id === form.getValues('subjectId'))?.name || '',
+                    activityDescription: form.getValues('description')
+                })
+                console.log('Checklist gerado:', generatedItems)
+                generatedItems.forEach(item => appendChecklist(item))
+                setErrorMessage(null)
+            } catch (error) {
+                console.error('Erro ao gerar checklist:', error)
+                setErrorMessage('Ocorreu um erro ao gerar o checklist. Tente novamente.')
+            } finally {
+                setIsChecklistGenerating(false)
+            }
+
+        } else {
+            setIsChecklistGenerating(false)
+            form.setError('title', { message: 'Digite ao menos o título para gerar o checklist' })
         }
     }
 
@@ -245,7 +273,7 @@ function AddActivityDialog({ isOpen, onClose, user, activity }: AddActivityDialo
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Selecione uma matéria"/>
+                                                    <SelectValue placeholder="Selecione uma matéria" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
@@ -312,7 +340,7 @@ function AddActivityDialog({ isOpen, onClose, user, activity }: AddActivityDialo
                                     <FormLabel>Descrição (Opcional)</FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            placeholder="Detalhes adicionais..."
+                                            placeholder="DICA: Descrições detalhadas melhoram a geração de checklist pela IA"
                                             className="resize-none"
                                             {...field}
                                         />
@@ -326,15 +354,29 @@ function AddActivityDialog({ isOpen, onClose, user, activity }: AddActivityDialo
                         <div className="space-y-3 pt-2">
                             <div className="flex items-center justify-between">
                                 <FormLabel className="font-semibold text-base">Checklist</FormLabel>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => appendChecklist({ description: '', isDone: false })}
-                                >
-                                    <Plus className="h-4 w-4 mr-1" />
-                                    Adicionar Item
-                                </Button>
+                                <div className='flex gap-2 items-center'>
+                                    <Button
+                                        onClick={() => handleGenerateChecklist()}
+                                        disabled={isChecklistGenerating}
+                                        type='button'
+                                    >
+                                        {isChecklistGenerating ? (
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Sparkles />
+                                        )}
+                                        <p>Gerar Checklist</p>
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => appendChecklist({ description: '', isDone: false })}
+                                    >
+                                        <Plus className="h-4 w-4 mr-1" />
+                                        Adicionar Item
+                                    </Button>
+                                </div>
                             </div>
                             {checklistFields.map((field, index) => (
                                 <div key={field.id} className="flex flex-row items-center gap-2">

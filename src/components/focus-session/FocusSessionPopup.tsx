@@ -61,12 +61,11 @@ export default function FocusSessionPopup() {
             <DialogContent
                 showCloseButton={phase !== 'running'}
                 onInteractOutside={handleInteractOutside}
-                className="sm:max-w-md"
+                className="min-w-[95vw] h-[95vh] rounded-md flex flex-col"
             >
                 <DialogHeader>
                     <DialogTitle>{titleFor(phase, midSessionCompleting)}</DialogTitle>
                 </DialogHeader>
-
                 {phase === 'idle' && <FocusSessionSetup />}
                 {phase === 'running' && !midSessionCompleting && <FocusSessionTimer />}
                 {phase === 'running' && midSessionCompleting && <FocusSessionActivityPicker />}
